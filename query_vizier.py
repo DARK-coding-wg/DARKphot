@@ -38,6 +38,23 @@ logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s- %
 #################
 ### Functions ###
 #################
+def get_all_dataframes(ra_list, dec_list):
+    """ Sloppy way to run through a list of sources """
+    list_of_frames = []
+    for ra, dec in zip(ra_list, dec_list):
+        url = create_url_from_pos(ra, dec, radius=1.5)
+        download_from_vizier(url, 'test_vo_table.vot')
+        try:
+            data = read_vo_table('test_vo_table.vot')
+        except ValueError:
+            print 'no object at coordinates {:} {:+f}'.format(ra, dec)
+            list_of_frames.append(-99)
+        else:
+            list_of_frames.append(data)
+        finally:
+            os.remove('test_vo_table.vot')
+    return list_of_frames
+
 def read_vo_table(filename):
     """
     Reads in a VOTable and returns a pandas dataframe containing the data.
@@ -92,7 +109,7 @@ def create_url_from_pos(ra, dec, radius=1.5):
     Returns:
         url - URL where VOTable from Vizier Photometric Table can be found
     """
-    url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:}{:+f}&-c.rs={:}'.format(ra,dec,radius)
+    url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:f}'.format(ra,dec,radius)
     return url
 
 ####################
@@ -124,12 +141,11 @@ if __name__ == '__main__':
     ## Process command line arguments
     parse_args()
 
-    ## 3C 273
-    ra = 187.27832916
-    dec = 2.05199
+    ## A couple sources, including one that doesn't have any counterparts
+    ra_list = [187.27832916, 150.231314, 149.426254]
+    dec_list = [2.05199, -4.1234,  2.073906]
 
-    url = create_url_from_pos(ra, dec, radius=1.5)
-    download_from_vizier(url, 'test_vo_table.vot')
-    data_3c273 = read_vo_table('test_vo_table.vot')
-    print data_3c273.head()
-    print data_3c273.info()
+    all_photometry = get_all_dataframes(ra_list, dec_list)
+  
+
+        
