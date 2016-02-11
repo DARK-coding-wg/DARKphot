@@ -25,6 +25,7 @@ import sys
 import argparse
 import requests
 from astropy.table import Table
+from astropy.coordinates import SkyCoord
 
 ## Debugging module and intital setup
 import logging
@@ -111,6 +112,20 @@ def create_url_from_pos(ra, dec, radius=1.5):
     """
     url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:f}'.format(ra,dec,radius)
     return url
+
+def convertCoordsToDegrees(RA,dec):
+    """
+    Convert RA n h:m:s and dec in d:m:s to decimal degrees.
+    Input can be list-like (e.g. RA = [0,42,30]), or strings (e.g. dec = '+41d12m00s' or
+    '+41 12 00' or similar).
+    """
+
+    if not isinstance(RA ,str): RA  =  '{:d}h{:d}m{:f}s'.format(RA[0], RA[1], RA[2])
+    if not isinstance(dec,str): dec = '{:+d}d{:d}m{:f}s'.format(dec[0],dec[1],dec[2])
+
+    coords = SkyCoord(RA,dec)
+
+    return coords.ra.deg,coords.dec.deg
 
 ####################
 ####################
