@@ -61,7 +61,7 @@ class VizierCatalog(object):
                 n_rows = photometry.shape[0]
                 photometry['source_id'] = np.repeat(source_list[ii], n_rows)
                 list_of_frames.append(photometry)
-        all_frames = pd.concat(list_of_frames)
+        all_frames = self._replace_frequency_with_wavelength(pd.concat(list_of_frames))
         return all_frames
 
     def query_vizier_by_pos(self, ra, dec):
@@ -132,7 +132,14 @@ class VizierCatalog(object):
         url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:f}'.format(ra,dec,radius)
         return url
 
-    def _convert_coords_to_degrees(self, RA,dec):
+    def _replace_frequency_with_wavelength(self, catalog):
+        """ Converts the column sed_freq to sed_wave with the appropriate units """
+        df = catalog.copy()
+        df['sed_wave'] = 2.998e5/df['sed_freq']  # Converts from GHz to microns
+        df.drop('sed_freq', axis=1, inplace=True)
+        return df
+    
+    def _convert_coords_to_degrees(self, RA, dec):
         """
         Convert RA n h:m:s and dec in d:m:s to decimal degrees.
         Input can be list-like (e.g. RA = [0,42,30]), or strings (e.g. dec = '+41d12m00s' or
