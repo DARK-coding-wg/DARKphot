@@ -36,46 +36,38 @@ logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s- %
 ###############
 class VizierCatalog(object):
     """ Class for creating a photometric catalog from Vizier """
-
-    def get_all_dataframes(self, ra_list, dec_list, source_list=None):
+        
+    def get_all_dataframes(self, source_list, source_id=None, radius=1.5):
         """ Create a catalog containing all the photometric data from Vizier for a list of sources
 
         Returns full output from Vizier, with a single added column of source_id.
         Args:
-            ra_list - list (or numpy array) of right ascensions in decimal degrees
-            dec_list - list (or numpy array) of declinations in decimal degrees
+            source_list - list of souces. Can be a list of (ra, dec) tuples or a list of names as strings. RA & Dec must be in decimal degrees.
         Keywords:
-            source_list - list of source_ids to use. If not provided, will use the index of the list
+            radius - Defines region to search for counterparts in arcsec. Default is 1.5"
+            source_id - list of source_ids to use. If not provided, will use the index of the source_list
         Returns:
             all_frames - a pandas dataframe that contains all observations from Vizier and an additional source_id column for identifying sources
         """
-        if source_list is None:
-            source_list = np.arange(len(ra_list))
+        if source_id is None:
+            source_id = np.arange(len(source_list))
         list_of_frames = []
-        for ii, (ra, dec) in enumerate(zip(ra_list, dec_list)):
+        for ii, source in enumerate(source_list):
+            url = self._create_url(source, radius=radius)
+            self._download_from_vizier(url, 'test_vo_table.vot')
             try:
-                photometry = self.query_vizier_by_pos(ra, dec)
+                photometry = self._read_vo_table('test_vo_table.vot')
             except ValueError:
-                logging.warning('No sources found via Vizier at coordinate {:} {:+f}'.format(ra, dec))
+                logging.warning('No observations found via Vizier for source_id = {:}'.format(source_id[ii]))
             else:
                 n_rows = photometry.shape[0]
-                photometry['source_id'] = np.repeat(source_list[ii], n_rows)
+                photometry['source_id'] = np.repeat(source_id[ii], n_rows)
                 list_of_frames.append(photometry)
+            finally:
+                os.remove('test_vo_table.vot')
         all_frames = self._replace_frequency_with_wavelength(pd.concat(list_of_frames))
-        return all_frames
+        return all_frames  
 
-    def query_vizier_by_pos(self, ra, dec):
-        """ Create a pandas dataframe that contains the vizier catalog of a given source"""
-        url = self._create_url_from_pos(ra, dec, radius=1.5)
-        self._download_from_vizier(url, 'test_vo_table.vot')
-        try:
-            photometry = self._read_vo_table('test_vo_table.vot')
-        except ValueError:
-            raise
-        finally:
-            os.remove('test_vo_table.vot')
-        return photometry
-        
     def _read_vo_table(self, filename):
         """
         Reads in a VOTable and returns a pandas dataframe containing the data (private).
@@ -116,22 +108,25 @@ class VizierCatalog(object):
                     vo_table.write(chunk)
                     #f.flush()
 
-    def _create_url_from_pos(self, ra, dec, radius=1.5):
-        """ Create the URL used to query Vizier's photometric Viewer based on astrometry
-    
-        Uses the format found at http://vizier.u-strasbg.fr/vizier/sed/doc/
+    def _create_url(self, source, radius=1.5):
+        """ Make the correct URL for the Vizier query
 
+        Uses the format found at http://vizier.u-strasbg.fr/vizier/sed/doc/
         Args:
-            ra - Right Ascension in Decimal Degrees
-            dec - Declination in Decimal Degrees
+            source - Either a tuple of (ra, dec) in decimal degrees or a string that represents the name of the source
         Keywords:
             radius - Search radius in arcsec. Default is 1.5 arcsec. 
         Returns:
             url - URL where VOTable from Vizier Photometric Table can be found
         """
-        url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:f}'.format(ra,dec,radius)
+        if isinstance(source, tuple):
+            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:f}'.format(source[0], source[1], radius)
+        elif isinstance(source, str):
+            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:}&-c.rs={:f}'.format(source, radius)
+        else:
+            raise IOError('Provided Source is not of correct type. Must be either a tuple of (ra, dec) or a string of name')
         return url
-
+        
     def _replace_frequency_with_wavelength(self, catalog):
         """ Converts the column sed_freq to sed_wave with the appropriate units """
         df = catalog.copy()
@@ -184,9 +179,10 @@ if __name__ == '__main__':
     ## A couple sources, including one that doesn't have any counterparts
     ra_list = [187.27832916, 150.231314, 149.426254]
     dec_list = [2.05199, -4.1234,  2.073906]
-
+    name_list = ['vega', 'ic348', 'not_a_source']
+    
     vizier = VizierCatalog()
-    all_photometry = vizier.get_all_dataframes(ra_list, dec_list)
-  
+    pos_phot = vizier.get_all_dataframes(zip(ra_list, dec_list))
+    named_phot = vizier.get_all_dataframes(name_list)
 
         
