@@ -23,6 +23,7 @@ import pdb
 import os
 import sys
 import argparse
+import warnings
 import requests
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
@@ -52,11 +53,12 @@ class VizierCatalog(object):
         if source_id is None:
             source_id = np.arange(len(source_list))
         list_of_frames = []
+        vot_name = 'test_vo_table.vot'
         for ii, source in enumerate(source_list):
             url = self._create_url(source, radius=radius)
-            self._download_from_vizier(url, 'test_vo_table.vot')
+            self._download_from_vizier(url, vot_name)
             try:
-                photometry = self._read_vo_table('test_vo_table.vot')
+                photometry = self._read_vo_table(vot_name)
             except ValueError:
                 logging.warning('No observations found via Vizier for source_id = {:}'.format(source_id[ii]))
             else:
@@ -64,7 +66,7 @@ class VizierCatalog(object):
                 photometry['source_id'] = np.repeat(source_id[ii], n_rows)
                 list_of_frames.append(photometry)
             finally:
-                os.remove('test_vo_table.vot')
+                os.remove(vot_name)
         all_frames = self._replace_frequency_with_wavelength(pd.concat(list_of_frames))
         return all_frames  
 
@@ -80,13 +82,15 @@ class VizierCatalog(object):
             ValueError: The VOTable exists but is empty. 
             IOError: Improper filename provided. Most likely the file does not exist.
         """
-        try:
-            tab = Table.read(filename)
-        except ValueError as exc:
-            raise 
-        except IOError as exc:
-            logging.critical('Invalid filename passed to read_vo_table')
-            raise 
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            try:
+                tab = Table.read(filename)
+            except ValueError as exc:
+                raise 
+            except IOError as exc:
+                logging.critical('Invalid filename passed to read_vo_table')
+                raise 
         return tab.to_pandas()
     
     def _download_from_vizier(self, url, filename):
