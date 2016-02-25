@@ -27,6 +27,7 @@ import warnings
 import requests
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
+import astropy.units as u
 
 ## Debugging module and intital setup
 import logging
@@ -50,6 +51,9 @@ class VizierCatalog(object):
         Returns:
             all_frames - a pandas dataframe that contains all observations from Vizier and an additional source_id column for identifying sources
         """
+
+        self._check_coords(source_list)
+
         if source_id is None:
             source_id = np.arange(len(source_list))
         list_of_frames = []
@@ -138,18 +142,26 @@ class VizierCatalog(object):
         df.drop('sed_freq', axis=1, inplace=True)
         return df
     
-    def _convert_coords_to_degrees(self, RA, dec):
+    def _check_coords(self,source_list):
+        """ Check that the source_list have the correct format. If not change to default coords.
+
+            Returns source_list with default tuple: (ra,dec) in degrees.
+
+            Improvements: except is too general.
+
         """
-        Convert RA n h:m:s and dec in d:m:s to decimal degrees.
-        Input can be list-like (e.g. RA = [0,42,30]), or strings (e.g. dec = '+41d12m00s' or
-        '+41 12 00' or similar).
-        """
-        if not isinstance(RA, str):
-            RA =  '{:d}h{:d}m{:f}s'.format(RA[0], RA[1], RA[2])
-        if not isinstance(dec, str):
-            dec = '{:+d}d{:d}m{:f}s'.format(dec[0], dec[1], dec[2])
-        coords = SkyCoord(RA, dec)
-        return coords.ra.deg, coords.dec.deg
+        name_test = isinstance(source_list[0], str)
+        ra_dec_test = isinstance(source_list[0][0],np.float)
+
+        if not (name_test or ra_dec_test):
+            for ii, cc in enumerate(source_list):
+                try:
+                    coords = SkyCoord(cc[0],cc[1],unit=(u.hourangle, u.deg))
+                    source_list[ii] = (coords.ra.deg, coords.dec.deg)
+                except:
+                    print 'WARNING: ra and dec format cannot be read'
+        return source_list
+        
 
 ####################
 ####################
@@ -181,12 +193,20 @@ if __name__ == '__main__':
     parse_args()
 
     ## A couple sources, including one that doesn't have any counterparts
-    ra_list = [187.27832916, 150.231314, 149.426254]
-    dec_list = [2.05199, -4.1234,  2.073906]
+    ra_list = [187.27832916, 150.231314, 149.426254] #['14:23:45.45'] #
+    dec_list = [2.05199, -4.1234,  2.073906] #['02:86:45.45'] #
+    #ra_list = ['14:23:45.45'] #
+    #dec_list = ['02:10:45.45'] #
+
+
     name_list = ['vega', 'ic348', 'not_a_source']
     
+    #assert False
+
     vizier = VizierCatalog()
     pos_phot = vizier.get_all_dataframes(zip(ra_list, dec_list))
-    named_phot = vizier.get_all_dataframes(name_list)
+    #named_phot = vizier.get_all_dataframes(name_list)
+
+
 
         
