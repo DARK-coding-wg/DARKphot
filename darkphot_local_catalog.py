@@ -50,11 +50,13 @@ class LocalCatalog(object):
             flux_errors = inter_catalog[col_name_fluxerror]
             ra_values, dec_values = inter_catalog[name_ra_col], inter_catalog[name_dec_col]
             id_names = inter_catalog[name_id_col]
-            freq = 2.998E18 / float(central_wavelength) # Central wavelength is in AA
+            #freq = 2.998E18 / float(central_wavelength) # Central wavelength is in AA
+            cen_wavelenght = central_wavelength * 1.e-4 # Wavelength from AA to micron
             inter_data_frame = pd.DataFrame({'_ID':id_names,
                                              '_RAJ2000':ra_values,
                                              '_DEJ2000':dec_values,
-                                             'sed_freq':len(ra_values)*[freq],
+                                             #'sed_freq':len(ra_values)*[freq],
+                                             'sed_wave':cen_wavelenght,
                                              'sed_flux':fluxes,
                                              'sed_eflux':flux_errors})
 
