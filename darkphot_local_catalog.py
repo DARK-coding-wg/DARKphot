@@ -1,4 +1,4 @@
-
+import numpy as np
 
 ############################
 # Main class: LocalCatalog #
@@ -12,6 +12,7 @@ class LocalCatalog(object):
     """
 
     def add_local_catalog(self, fname_input_catalog, fname_parameter_file,
+                          fname_object_sel_names=None,
                           name_ra_col = 'RA', name_dec_col='Dec',
                           name_id_col=None):
         """
@@ -20,6 +21,8 @@ class LocalCatalog(object):
             fname_input_catalog (str): Filename of the input catalog
             fname_parameter_file (str): Filename of the parameter file,
                 specifying the passband which need to be imported
+            fname_object_sel_names (str): Filename including object names which shall
+                be taken from the catalog
             name_ra_col (str; default: RA): Name of the RA column
                 in the input catalog
             name_dec_col (str; default: Dec): Name of the Dec column
@@ -32,6 +35,7 @@ class LocalCatalog(object):
 
         self.fname_parameter_file = fname_parameter_file
         self.fname_input_catalog = fname_input_catalog
+        self.fname_object_sel_names = fname_object_sel_names
 
         col_names_flux, col_names_fluxerror, central_wavelengths = \
                                         self._read_parameter_file()
@@ -43,6 +47,13 @@ class LocalCatalog(object):
             inter_catalog = self._read_text_catalog(file_format)
         else:
             raise(ValueError('fname_input_catalog has not an accpeted file ending. (Allowed: csv)'))
+
+        if self.fname_object_sel_names is not None:
+
+            if self._read_sel_object_names(): # Returns False, if there is no object
+                mask = get_match_mask_names(self.object_sel_names,
+                                            inter_catalog[name_id_col])
+                inter_catalog = inter_catalog[mask]
 
         for col_name_flux, col_name_fluxerror, central_wavelength in \
                 zip(col_names_flux, col_names_fluxerror, central_wavelengths):
@@ -82,12 +93,37 @@ class LocalCatalog(object):
                 if line[0] == '#':
                     continue
                 else:
-                    inter = line[:-1].split()
+                    inter = line.strip(' \n\t\n')
+                    inter = inter.split()
                     col_names_flux.append(inter[0])
                     col_names_fluxerror.append(inter[1])
                     central_wavelengths.append(float(inter[2]))
 
         return col_names_flux, col_names_fluxerror, central_wavelengths
+
+
+
+    def _read_sel_object_names(self):
+        """
+        Reading in the list of object names which shall be put into the catalog
+        Returns:
+
+        """
+
+        # TODO: Needs checking of potential problems with the input file
+        with open(self.fname_object_sel_names, 'r') as f:
+            self.object_sel_names = []
+            name_sel = False
+            for line in f:
+                if line[0] == '#':
+                    continue
+                else:
+                    inter = line.strip(' \n\t\n')
+                    self.object_sel_names.append(inter)
+                    name_sel = True # Only if there is a line, in the file specifying an object the selection will be activated
+
+        return name_sel
+
 
 
 
@@ -108,6 +144,33 @@ class LocalCatalog(object):
         return inter_catalog
 
 #####################
+### Help functions ##
+#####################
+
+def get_match_mask_names(sel_list, master_array):
+    """
+    Create a mask for those elements in a master_array which are included in a
+    a selection list
+    Args:
+        sel_list (list):
+        master_array (array):
+
+    Returns:
+
+    """
+    # TODO Think about how this function can be made more efficient
+
+    master_mask = np.zeros(len(master_array), dtype=bool)
+    for element in sel_list:
+        master_mask = master_mask | (master_array == element)
+
+    return master_mask
+
+
+
+
+
+#####################
 ###### Run Code #####
 #####################
 if __name__ == '__main__':
@@ -116,8 +179,9 @@ if __name__ == '__main__':
     ## A couple sources, including one that doesn't have any counterparts
     fname_catalog = 'example_data/test_cat.csv'
     fname_param = 'example_data/input_local_cat.param'
+    fname_object_names_sel = 'example_data/input_names.txt'
 
     lc1 = LocalCatalog()
-    lc1.add_local_catalog(fname_catalog, fname_param, name_id_col='NAME')
+    lc1.add_local_catalog(fname_catalog, fname_param, fname_object_names_sel, name_id_col='NAME')
     print lc1.data_frame
 
