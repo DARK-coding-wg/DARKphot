@@ -38,7 +38,40 @@ logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s- %
 ###############
 class VizierCatalog(object):
     """ Class for creating a photometric catalog from Vizier """
+
+    def query_vizier(self, source_list, radius=1.5):
+        """ Creates photometric table and source information table
+
+        Args:
+            source_list - list of souces. Can be a list of (ra, dec) tuples or a list of names as strings. RA & Dec must be in decimal degrees.
+        Keywords:
+            radius - Defines region to search for counterparts in arcsec. Default is 1.5
+        Returns:
+            vizier_data - pandas dataframe containing all observations from Vizier and an additional source_id column that identifies which source each obsersvation is for
+            source_info - pandas dataframe containing the names, positions, and source_id of each input source. 
+        """
+        ## Figure out if inputs are names or positions
+        names = []
+        pos = []
+        source_id = []
         
+        for ii, source in enumerate(source_list):
+            ## Single string = Source name
+            if isinstance(source, str):
+                names.append(source)
+                pos.append((np.nan, np.nan))
+                source_id.append(ii)
+            else:
+                names.append(np.nan)
+                pos.append(self._check_coords(source))
+                source_id.append(ii)
+        
+        ## Create pandas dataframe containing source_id & source name and/or position
+        self.source_info = pd.DataFrame({'names':names, 'positions':pos, 'source_id':source_id, 'input':source_list})
+        ## Go through Vizier queries 
+        vizier_data = self.get_all_dataframes(source_list, source_id=source_id, radius=radius)
+        return vizier_data, self.source_info
+    
     def get_all_dataframes(self, source_list, source_id=None, radius=1.5):
         """ Create a catalog containing all the photometric data from Vizier for a list of sources
 
@@ -51,9 +84,6 @@ class VizierCatalog(object):
         Returns:
             all_frames - a pandas dataframe that contains all observations from Vizier and an additional source_id column for identifying sources
         """
-
-        self._check_coords(source_list)
-
         if source_id is None:
             source_id = np.arange(len(source_list))
         list_of_frames = []
@@ -127,12 +157,16 @@ class VizierCatalog(object):
         Returns:
             url - URL where VOTable from Vizier Photometric Table can be found
         """
-        if isinstance(source, tuple):
-            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:f}'.format(source[0], source[1], radius)
-        elif isinstance(source, str):
-            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:}&-c.rs={:f}'.format(source, radius)
+        if isinstance(source, str):
+            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:}&-c.rs={:4.2f}'.format(source, float(radius))
         else:
-            raise IOError('Provided Source is not of correct type. Must be either a tuple of (ra, dec) or a string of name')
+            try:
+                coords = self._check_coords(source)
+            except:
+                raise IOError('Provided Source is not of correct type. Must be either a tuple of (ra, dec) or a string of name')
+            else:
+                url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:4.2f}'.format(coords[0], coords[1], float(radius))
+                logging.debug('{:}'.format(url))
         return url
         
     def _replace_frequency_with_wavelength(self, catalog):
@@ -142,25 +176,27 @@ class VizierCatalog(object):
         df.drop('sed_freq', axis=1, inplace=True)
         return df
     
-    def _check_coords(self,source_list):
-        """ Check that the source_list have the correct format. If not change to default coords.
+    def _check_coords(self, position):
+        """ Check that a source position is in the correct format. If not change to default coords.
 
-            Returns source_list with default tuple: (ra,dec) in degrees.
-
-            Improvements: except is too general.
-
+        Args:
+            position - source position. Must be 2-element list-like object with position[0] = ra, position[1] = dec.
+                       Acceptable formats for ra & dec are decimal degrees as single floats or ints, or
+                       sexagisimal as 3-element tuple/lists of (h, m, s), or strings with h/m/s
+        Returns:
+            source_pos - Tuple of (ra,dec) in degrees.
         """
-        name_test = isinstance(source_list[0], str)
-        ra_dec_test = isinstance(source_list[0][0],np.float)
-
-        if not (name_test or ra_dec_test):
-            for ii, cc in enumerate(source_list):
-                try:
-                    coords = SkyCoord(cc[0],cc[1],unit=(u.hourangle, u.deg))
-                    source_list[ii] = (coords.ra.deg, coords.dec.deg)
-                except:
-                    print 'WARNING: ra and dec format cannot be read'
-        return source_list
+        in_degrees = isinstance(position[0], (float, int)) & isinstance(position[1], (float, int))
+        if not in_degrees:
+            try:
+                coords = SkyCoord(position[0], position[1], unit=(u.hourangle, u.deg))
+                new_pos = (coords.ra.deg, coords.dec.deg)
+            except:
+                logging.critical('WARNING: ra and dec format cannot be read')
+                raise
+        else:
+            new_pos = (float(position[0]), float(position[1]))
+        return new_pos
         
 
 ####################
@@ -193,19 +229,15 @@ if __name__ == '__main__':
     parse_args()
 
     ## A couple sources, including one that doesn't have any counterparts
-    ra_list = [187.27832916, 150.231314, 149.426254] #['14:23:45.45'] #
-    dec_list = [2.05199, -4.1234,  2.073906] #['02:86:45.45'] #
+    ra_list = [187.27832916, 150.231314, 149.426254, '15 34 57.224'] 
+    dec_list = [2.05199, -4.1234,  2.073906, '+23 30 11.610'] 
     #ra_list = ['14:23:45.45'] #
     #dec_list = ['02:10:45.45'] #
-
-
     name_list = ['vega', 'ic348', 'not_a_source']
     
-    #assert False
-
     vizier = VizierCatalog()
-    pos_phot = vizier.get_all_dataframes(zip(ra_list, dec_list))
-    #named_phot = vizier.get_all_dataframes(name_list)
+    pos_phot, pos_sources = vizier.query_vizier(zip(ra_list, dec_list))
+    named_phot, named_sources = vizier.query_vizier(name_list)
 
 
 
