@@ -170,9 +170,13 @@ class VizierCatalog(object):
         return url
         
     def _replace_frequency_with_wavelength(self, catalog):
-        """ Converts the column sed_freq to sed_wave with the appropriate units """
+        """ Converts the column sed_freq to sed_wave with the appropriate units.
+
+        Treats any negative frequencies as non-detections and replaces them with NaNs """
         df = catalog.copy()
-        df['sed_wave'] = 2.998e5/df['sed_freq']  # Converts from GHz to microns
+        speed_of_light = 299792.458  # [um * GHz]
+        df['sed_wave'] = speed_of_light/df['sed_freq']  # Converts from GHz to microns
+        df.loc[df['sed_wave'] < 0, 'sed_wave'] = np.nan
         df.drop('sed_freq', axis=1, inplace=True)
         return df
     
