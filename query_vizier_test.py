@@ -17,6 +17,7 @@ import pandas as pd
 import numpy as np
 import pandas.util.testing as pdt
 from query_vizier import VizierCatalog
+import pdb
 
 ##################
 ### Unit Tests ###
@@ -48,3 +49,36 @@ class TestQuery(unittest.TestCase):
     def test_create_url_one_element_list(self):
         """ Check _create_url with tuple of floats"""
         self.assertRaises(IOError,self.vizier._create_url,(279.234733))
+
+    ### Test for _check_coords ###
+    def test_check_coords_conversion(self):
+        """Check that various representations of Vega coords return the same result"""
+        formats = ['tuples',
+                    'lists',
+                    'arrays',
+                    'colon strings',
+                    'signed coloncstrings',
+                    'hms dms',
+                    'hms dms with spaces',
+                   'space strings']
+        RA      = pd.Series([(18,36,56.3364),
+                             [18,36,56.3364],
+                    np.array([18,36,56.3364]),
+                             '18:36:56.3364',
+                            '+18:36:56.3364',
+                             '18h36m56.3364s',
+                             '18h 36m 56.3364s',
+                             '18 36 56.3364'], index=formats, name='RA')
+        dec     = pd.Series([(38,47,1.291),
+                             [38,47,1.291],
+                    np.array([38,47,1.291]),
+                             '38:47:1.291',
+                            '+38:47:1.291',
+                             '38d47m1.291s',
+                             '38d 47m 1.291s',
+                             '38 47 1.291'],   index=formats, name='dec')
+        tests   = pd.concat([RA, dec], axis=1)  #Concat Series to a DataFrame
+        result  = (279.234735, 38.783691944)    #This should be the result of all calls
+        for r,d in zip(tests['RA'], tests['dec']):
+            current_result = self.vizier._check_coords((r,d))
+            pdt.assert_almost_equal(current_result, result)
