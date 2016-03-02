@@ -37,14 +37,33 @@ class TestQuery(unittest.TestCase):
     ### Test for _create_url ###
     def test_create_url_name_input(self):
         """ Check _create_url with string name input"""
-        url_return = self.vizier._create_url('vega')
-        self.assertTrue(url_return=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=vega&-c.rs=1.50")
+        url = self.vizier._create_url('vega')
+        self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=vega&-c.rs=1.50")
     
     def test_create_url_tuple_input(self):
         """ Check _create_url with tuple of floats"""
-        url_return = self.vizier._create_url((279.234733,38.783))
-        self.assertTrue(url_return=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=279.234733+38.783000&-c.rs=1.50")
+        url = self.vizier._create_url((279.234733,38.783))
+        self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=279.234733+38.783000&-c.rs=1.50")
+    
+    def test_create_url_zero_input(self):
+        """ Check _create_url with tuple of 0 ints"""
+        url = self.vizier._create_url((0,0))
+        print url
+        self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=0.000000+0.000000&-c.rs=1.50")
     
     def test_create_url_one_element_list(self):
         """ Check _create_url with tuple of floats"""
         self.assertRaises(IOError,self.vizier._create_url,(279.234733))
+    
+    def test_create_url_negative_dec(self):
+        """ Check that negative declination is handled correctly """
+        url = self.vizier._create_url((1.0,-38.783),radius=10.)
+        self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=1.000000-38.783000&-c.rs=10.00")
+    
+    def test_create_url_negative_ra(self):
+        """ Check that negative declination is handled correctly """
+        url = self.vizier._create_url((-100.0,-38.783),radius=10.)
+        self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=-100.000000-38.783000&-c.rs=10.00")
+        
+    
+    
