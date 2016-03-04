@@ -27,6 +27,15 @@ class TestQuery(unittest.TestCase):
     def setUp(self):
         self.vizier = VizierCatalog()
 
+    def assert_equal_pos(self, pos1, pos2, delta=None):
+        """ Check two positions and make sure they're the same within a certain distance """
+        if delta is None:
+            delta = 0.01/3600.
+        pos1 = self.vizier._check_coords(pos1)
+        pos2 = self.vizier._check_coords(pos2)
+        self.assertAlmostEqual(pos1[0], pos2[0], delta=delta)  # 1/10 arcsec
+        self.assertAlmostEqual(pos1[1], pos2[1], delta=delta)  # 1/10 arcsec
+        
     ### Test for _replace_frequency_with_wavelength ###
     def test_freq_to_wave(self):
         """ Check conversion from frequency in GHz to wavelength in microns """
@@ -34,7 +43,18 @@ class TestQuery(unittest.TestCase):
         new_frame = self.vizier._replace_frequency_with_wavelength(input_frame)
         wavelengths = pd.DataFrame({'source_id':np.arange(5), 'sed_wave':[2.997925e3, 2.997925e7, np.inf, np.nan, np.nan]})
         pdt.assert_series_equal(wavelengths['sed_wave'], new_frame['sed_wave'])
-    
+
+    ## Tests for _read_vo_table
+    def test_read_vega_table(self):
+        """ Make sure the vega table is being read correctly """
+        vega_path = 'test_data/vega_vizier_votable.vot'
+        if not os.path.exists(vega_path):
+            vega_url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c=Vega&-c.rs=1.5'
+            self.vizier._download_from_vizier(vega_url, vega_path)
+        vega_table = self.vizier._read_vo_table(vega_path)
+        self.assert_equal_pos(vega_table
+
+        
     ### Test for _create_url ###
     def test_create_url_name_input(self):
         """ Check _create_url with string name input"""
