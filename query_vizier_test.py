@@ -140,3 +140,12 @@ class TestQuery(unittest.TestCase):
         for r,d in zip(tests['RA'], tests['dec']):
             current_result = self.vizier._check_coords((r,d))
             pdt.assert_almost_equal(current_result, result)
+
+
+
+                    ### Test for download_from_vizier ###
+        def test_download_from_vizier(self):
+            # Did it download a file 
+            # Assert error if vo table is empty (or non-empty)
+            # Did it download the observation from correct position
+            
