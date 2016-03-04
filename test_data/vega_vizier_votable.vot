@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VOTABLE version="1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.ivoa.net/xml/VOTable/v1.2"
+  xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.2 http://www.ivoa.net/xml/VOTable/v1.2">
+ <DESCRIPTION>
+   VizieR Astronomical Server vizier.u-strasbg.fr
+    Date: 2016-02-25T10:39:19 [V1.99+ (14-Oct-2013)]
+   Explanations and Statistics of UCDs:			See LINK below
+   In case of problem, please report to:	cds-question@unistra.fr
+   In this version, NULL integer columns are written as an empty string
+   &lt;TD&gt;&lt;/TD&gt;, explicitely possible from VOTable-1.3
+ </DESCRIPTION>
+<!-- VOTable description at http://www.ivoa.net/Documents/latest/VOT.html -->
+<INFO ID="VERSION" name="votable-version" value="1.99+ (14-Oct-2013)"/>
+<INFO ID="Ref" name="-ref" value="VOTx24610"/>
+<INFO name="-out.form" value="mini"/>
+<INFO name="MaxTuples" value="50000" />
+<INFO name="queryParameters" value="5">
+-oc.form=D.
+-c=Vega
+-phot
+-out=_raj,_dej,_tabname(),_ID(),_sed4
+-c.rs=1.5
+</INFO>
+<INFO ID="Target" name="-c" value="279.234735+38.783689,rs=1.5">
+</INFO>
+
+<RESOURCE ID="VizieR_S509711959" name="VizieR(2016-02-25T10:39:19)">
+  <DESCRIPTION>VizieR database maintained by CDS, see http://vizier.u-strasbg.fr</DESCRIPTION>
+  <COOSYS ID="J2000_2000.000" system="eq_FK5" equinox="J2000" epoch="2000.000"/>
+  <COOSYS ID="J2000" system="eq_FK5" equinox="J2000"/>
+  <TABLE ID="VizieR_0" name="allVizieR">
+    <DESCRIPTION>all VizieR catalogues</DESCRIPTION>
+    <!-- Definitions of GROUPs and FIELDs -->
+    <GROUP ID="gsed" name="_sed" ucd="phot" utype="spec:PhotometryPoint">
+      <DESCRIPTION>The SED group is made of 4 columns: mean frequency, flux, flux error, and filter designation</DESCRIPTION>
+      <FIELDref ref="sed_freq" utype="photdm:PhotometryFilter.SpectralAxis.Coverage.Location.Value"/>
+      <FIELDref ref="sed_flux" utype="spec:PhotometryPoint"/>
+      <FIELDref ref="sed_eflux" utype="spec:PhotometryPointError"/>
+      <FIELDref ref="sed_filter" utype="photdm:PhotometryFilter.identifier"/>
+    </GROUP>
+    <FIELD name="_RAJ2000" ucd="pos.eq.ra" ref="J2000" datatype="double" width="10" precision="6" unit="deg">
+      <DESCRIPTION>Right ascension (FK5, Equinox=J2000.0) at Epoch=J2000, proper motions taken into account  (computed by VizieR, not part of the original data)</DESCRIPTION>
+    </FIELD>
+    <FIELD name="_DEJ2000" ucd="pos.eq.dec" ref="J2000" datatype="double" width="10" precision="6" unit="deg">
+      <DESCRIPTION>Declination (FK5, Equinox=J2000.0) at Epoch=J2000, proper motions taken into account  (computed by VizieR, not part of the original data)</DESCRIPTION>
+    </FIELD>
+    <FIELD name="_tabname" ucd="meta.table" datatype="char" arraysize="32*">
+      <DESCRIPTION>Table name</DESCRIPTION>
+      <LINK href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-info=XML&amp;-out.add=.&amp;-source=${_tabname}&amp;${_ID}"/>
+    </FIELD>
+    <FIELD name="_ID" ucd="meta.id" datatype="char" arraysize="64*">
+      <DESCRIPTION>String which identifies the row</DESCRIPTION>
+    </FIELD>
+    <FIELD ID="sed_freq" name="_sed_freq" ucd="em.freq" unit="GHz" datatype="double" width="10" precision="E6">
+      <DESCRIPTION>Mean frequency, in GHz</DESCRIPTION>
+    </FIELD>
+    <FIELD ID="sed_flux" name="_sed_flux" ucd="phot.flux.density" unit="Jy" datatype="float" width="9" precision="E3">
+      <DESCRIPTION>Corresponding flux density, in Jy</DESCRIPTION>
+    </FIELD>
+    <FIELD ID="sed_eflux" name="_sed_eflux" ucd="stat.error;phot.flux.density" unit="Jy" datatype="float" width="8" precision="E2">
+      <DESCRIPTION>Mean error (standard deviations) of flux density</DESCRIPTION>
+    </FIELD>
+    <FIELD ID="sed_filter" name="_sed_filter" ucd="meta.id;instr.filter" unit="" datatype="char" width="32" arraysize="32*">
+      <DESCRIPTION>Filter designation, in the form photoSystem:filterName; a designation starting by ':=' is an assumed monochromatic point; this column is empty when the frequency is specified for each data point.</DESCRIPTION>
+      <LINK href="http://cdsarc.u-strasbg.fr/viz-bin/metafilter?${_sed_filter}"/>
+    </FIELD>
+<DATA><TABLEDATA>
+<TR><TD>279.234733</TD><TD>+38.783692</TD><TD>I/270/cpirss01</TD><TD>recno=9890</TD><TD>2.9406e+3</TD><TD>7.76</TD><TD></TD><TD>IRAS:100</TD></TR>
+<TR><TD>279.234733</TD><TD>+38.783692</TD><TD>I/270/cpirss01</TD><TD>recno=9890</TD><TD>4.8471e+3</TD><TD>9.51</TD><TD></TD><TD>IRAS:60</TD></TR>
+<TR><TD>279.234733</TD><TD>+38.783692</TD><TD>I/270/cpirss01</TD><TD>recno=9890</TD><TD>12.554e+3</TD><TD>11.0</TD><TD></TD><TD>IRAS:25</TD></TR>
+<TR><TD>279.234733</TD><TD>+38.783692</TD><TD>I/270/cpirss01</TD><TD>recno=9890</TD><TD>25.866e+3</TD><TD>41.6</TD><TD></TD><TD>IRAS:12</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783692</TD><TD>I/297/out</TD><TD>NOMAD1===1287-0310018</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783692</TD><TD>I/297/out</TD><TD>NOMAD1===1287-0310018</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783692</TD><TD>I/297/out</TD><TD>NOMAD1===1287-0310018</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234737</TD><TD>+38.783690</TD><TD>I/312/sample</TD><TD>PPMX===183656.3+384701</TD><TD>138.55e+3</TD><TD>599.</TD><TD>103.</TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234737</TD><TD>+38.783690</TD><TD>I/312/sample</TD><TD>PPMX===183656.3+384701</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD>0.15e+3</TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234737</TD><TD>+38.783690</TD><TD>I/312/sample</TD><TD>PPMX===183656.3+384701</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD>0.35e+3</TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234737</TD><TD>+38.783690</TD><TD>I/317/sample</TD><TD>PPMXL===5663564222761121670</TD><TD>138.55e+3</TD><TD>599.</TD><TD>103.</TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234737</TD><TD>+38.783690</TD><TD>I/317/sample</TD><TD>PPMXL===5663564222761121670</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD>0.15e+3</TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234737</TD><TD>+38.783690</TD><TD>I/317/sample</TD><TD>PPMXL===5663564222761121670</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD>0.35e+3</TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234737</TD><TD>+38.783690</TD><TD>I/322A/out</TD><TD>UCAC4===644-060907</TD><TD>138.55e+3</TD><TD>599.</TD><TD>105.</TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234737</TD><TD>+38.783690</TD><TD>I/322A/out</TD><TD>UCAC4===644-060907</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD>0.15e+3</TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234737</TD><TD>+38.783690</TD><TD>I/322A/out</TD><TD>UCAC4===644-060907</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD>0.36e+3</TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234723</TD><TD>+38.783691</TD><TD>II/246/out</TD><TD>2MASS===18365633+3847012</TD><TD>136.89e+3</TD><TD>580.</TD><TD>100.</TD><TD>Johnson:K</TD></TR>
+<TR><TD>279.234723</TD><TD>+38.783691</TD><TD>II/246/out</TD><TD>2MASS===18365633+3847012</TD><TD>183.92e+3</TD><TD>1.07e+3</TD><TD>0.14e+3</TD><TD>Johnson:H</TD></TR>
+<TR><TD>279.234723</TD><TD>+38.783691</TD><TD>II/246/out</TD><TD>2MASS===18365633+3847012</TD><TD>239.83e+3</TD><TD>1.90e+3</TD><TD>0.36e+3</TD><TD>Johnson:J</TD></TR>
+<TR><TD>279.23518</TD><TD>+38.78370</TD><TD>III/39A/catalog</TD><TD>***No unique ID***</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234717</TD><TD>+38.783658</TD><TD>V/98/msx</TD><TD>recno=132389</TD><TD>2.9406e+3</TD><TD>7.76</TD><TD></TD><TD>IRAS:100</TD></TR>
+<TR><TD>279.234717</TD><TD>+38.783658</TD><TD>V/98/msx</TD><TD>recno=132389</TD><TD>4.8471e+3</TD><TD>9.51</TD><TD></TD><TD>IRAS:60</TD></TR>
+<TR><TD>279.234717</TD><TD>+38.783658</TD><TD>V/98/msx</TD><TD>recno=132389</TD><TD>12.554e+3</TD><TD>11.0</TD><TD></TD><TD>IRAS:25</TD></TR>
+<TR><TD>279.234717</TD><TD>+38.783658</TD><TD>V/98/msx</TD><TD>recno=132389</TD><TD>25.866e+3</TD><TD>41.6</TD><TD></TD><TD>IRAS:12</TD></TR>
+<TR><TD>279.234717</TD><TD>+38.783658</TD><TD>V/98/msx</TD><TD>recno=132389</TD><TD>25.866e+3</TD><TD>41.6</TD><TD></TD><TD>IRAS:12</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783692</TD><TD>V/145/sky2kv5</TD><TD>recno=224887</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD>0.02e+3</TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38983</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38983</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38983</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38983</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38983</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38984</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38984</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38984</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38984</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38984</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38985</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38985</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38985</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38985</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38985</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38986</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38986</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38986</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38986</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38986</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38987</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38987</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38987</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38987</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38987</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38988</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38988</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38988</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38988</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38988</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38989</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38989</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38989</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38989</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38989</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38990</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38990</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38990</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38990</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38990</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38991</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38991</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38991</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38991</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38991</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38992</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38992</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38992</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38992</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38992</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38993</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38993</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38993</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38993</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38993</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38994</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38994</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38994</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38994</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38994</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38995</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38995</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38995</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38995</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38995</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38996</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38996</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38996</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38996</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38996</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38997</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38997</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38997</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38997</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38997</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38998</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38998</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38998</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38998</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38998</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38999</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38999</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38999</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38999</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=38999</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39000</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39000</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39000</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39000</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39000</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39001</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39001</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39001</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39001</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39001</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39002</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39002</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39002</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39002</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39002</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39003</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39003</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39003</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39003</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39003</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39004</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39004</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39004</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39004</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39004</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39005</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39005</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39005</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39005</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39005</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39006</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39006</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39006</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39006</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>B/pastel/pastel</TD><TD>recno=39006</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783692</TD><TD>J/ApJ/582/1011/table2</TD><TD>recno=29138</TD><TD>138.55e+3</TD><TD>675.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783692</TD><TD>J/ApJ/582/1011/table2</TD><TD>recno=29138</TD><TD>181.75e+3</TD><TD>1.05e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783692</TD><TD>J/ApJ/582/1011/table2</TD><TD>recno=29138</TD><TD>241.96e+3</TD><TD>1.58e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/ApJ/653/675/table1</TD><TD>recno=142</TD><TD>4.1976e+3</TD><TD>11.4</TD><TD>2.3</TD><TD>Spitzer/MIPS:70</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/ApJ/653/675/table1</TD><TD>recno=142</TD><TD>12.663e+3</TD><TD>8.90</TD><TD>0.09</TD><TD>Spitzer/MIPS:24</TD></TR>
+<TR><TD>279.23475</TD><TD>+38.78369</TD><TD>J/ApJ/736/89/table2</TD><TD>recno=16</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.23471</TD><TD>+38.78367</TD><TD>J/ApJS/154/673/DIRBE</TD><TD>recno=8769</TD><TD>2.9406e+3</TD><TD>7.76</TD><TD></TD><TD>IRAS:100</TD></TR>
+<TR><TD>279.23471</TD><TD>+38.78367</TD><TD>J/ApJS/154/673/DIRBE</TD><TD>recno=8769</TD><TD>4.8471e+3</TD><TD>9.51</TD><TD></TD><TD>IRAS:60</TD></TR>
+<TR><TD>279.23471</TD><TD>+38.78367</TD><TD>J/ApJS/154/673/DIRBE</TD><TD>recno=8769</TD><TD>12.554e+3</TD><TD>11.0</TD><TD></TD><TD>IRAS:25</TD></TR>
+<TR><TD>279.23471</TD><TD>+38.78367</TD><TD>J/ApJS/154/673/DIRBE</TD><TD>recno=8769</TD><TD>25.866e+3</TD><TD>41.6</TD><TD></TD><TD>IRAS:12</TD></TR>
+<TR><TD>279.23471</TD><TD>+38.78367</TD><TD>J/ApJS/154/673/DIRBE</TD><TD>recno=8769</TD><TD>138.55e+3</TD><TD>599.</TD><TD>103.</TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.23471</TD><TD>+38.78367</TD><TD>J/ApJS/154/673/DIRBE</TD><TD>recno=8769</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD>0.15e+3</TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.23471</TD><TD>+38.78367</TD><TD>J/ApJS/154/673/DIRBE</TD><TD>recno=8769</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD>0.35e+3</TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.23471</TD><TD>+38.78367</TD><TD>J/ApJS/190/203/table3</TD><TD>recno=1605</TD><TD>85.118e+3</TD><TD>257.</TD><TD>10.</TD><TD>DIRBE:3.5</TD></TR>
+<TR><TD>279.23471</TD><TD>+38.78367</TD><TD>J/ApJS/190/203/table3</TD><TD>recno=1605</TD><TD>134.96e+3</TD><TD>627.</TD><TD>15.</TD><TD>DIRBE:2.2</TD></TR>
+<TR><TD>279.23471</TD><TD>+38.78367</TD><TD>J/ApJS/190/203/table3</TD><TD>recno=1605</TD><TD>237.32e+3</TD><TD>1.55e+3</TD><TD>0.05e+3</TD><TD>DIRBE:1.25</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/ApJS/199/8/table1</TD><TD>recno=3953</TD><TD>136.89e+3</TD><TD>579.</TD><TD></TD><TD>Johnson:K</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/ApJS/199/8/table1</TD><TD>recno=3953</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/ApJS/199/8/table1</TD><TD>recno=3953</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/ApJS/199/8/table2</TD><TD>recno=2231</TD><TD>136.89e+3</TD><TD>579.</TD><TD></TD><TD>Johnson:K</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/ApJS/199/8/table2</TD><TD>recno=2231</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/ApJS/199/8/table2</TD><TD>recno=2231</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.234735</TD><TD>+38.783689</TD><TD>J/A+A/546/A61/tablea1</TD><TD>recno=90959</TD><TD>745.75e+3</TD><TD>3.46e+3</TD><TD></TD><TD>HIP:Hp</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/A+AS/92/1/table1</TD><TD>recno=6</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>316.17e+3</TD><TD>2.25e+3</TD><TD></TD><TD>ALHAMBRA:A948M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>325.58e+3</TD><TD>2.33e+3</TD><TD></TD><TD>ALHAMBRA:A921M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>336.17e+3</TD><TD>2.29e+3</TD><TD></TD><TD>ALHAMBRA:A892M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>348.03e+3</TD><TD>2.21e+3</TD><TD></TD><TD>ALHAMBRA:A861M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>361.46e+3</TD><TD>2.33e+3</TD><TD></TD><TD>ALHAMBRA:A829M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>373.81e+3</TD><TD>2.42e+3</TD><TD></TD><TD>ALHAMBRA:A802M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>389.39e+3</TD><TD>2.54e+3</TD><TD></TD><TD>ALHAMBRA:A770M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>405.56e+3</TD><TD>2.65e+3</TD><TD></TD><TD>ALHAMBRA:A739M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>423.56e+3</TD><TD>2.78e+3</TD><TD></TD><TD>ALHAMBRA:A708M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>442.11e+3</TD><TD>2.91e+3</TD><TD></TD><TD>ALHAMBRA:A678M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>464.00e+3</TD><TD>2.94e+3</TD><TD></TD><TD>ALHAMBRA:A646M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>488.74e+3</TD><TD>3.22e+3</TD><TD></TD><TD>ALHAMBRA:A613M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>516.08e+3</TD><TD>3.40e+3</TD><TD></TD><TD>ALHAMBRA:A581M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>544.09e+3</TD><TD>3.60e+3</TD><TD></TD><TD>ALHAMBRA:A551M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>573.88e+3</TD><TD>3.77e+3</TD><TD></TD><TD>ALHAMBRA:A522M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>610.20e+3</TD><TD>3.80e+3</TD><TD></TD><TD>ALHAMBRA:A491M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>655.28e+3</TD><TD>4.29e+3</TD><TD></TD><TD>ALHAMBRA:A457M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>705.56e+3</TD><TD>4.09e+3</TD><TD></TD><TD>ALHAMBRA:A425M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>760.70e+3</TD><TD>3.56e+3</TD><TD></TD><TD>ALHAMBRA:A394M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/139/1242/standard</TD><TD>recno=23</TD><TD>818.88e+3</TD><TD>1.50e+3</TD><TD></TD><TD>ALHAMBRA:A366M</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/143/28/iuestars</TD><TD>recno=422</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>1.8737e+3</TD><TD>3.22</TD><TD></TD><TD>AKARI:N160</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>2.1414e+3</TD><TD>4.05</TD><TD></TD><TD>AKARI:WIDE-L</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>3.3310e+3</TD><TD>6.20</TD><TD></TD><TD>AKARI:WIDE-S</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>4.6122e+3</TD><TD>6.58</TD><TD></TD><TD>AKARI:N60</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>13.571e+3</TD><TD>9.62</TD><TD></TD><TD>WISE:W4</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>25.934e+3</TD><TD>28.5</TD><TD></TD><TD>WISE:W3</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>65.172e+3</TD><TD>1.16e+3</TD><TD></TD><TD>WISE:W2</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>89.490e+3</TD><TD>1.99e+3</TD><TD></TD><TD>WISE:W1</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/AJ/148/3/table2</TD><TD>recno=62</TD><TD>674.90e+3</TD><TD>4.14e+3</TD><TD></TD><TD>Johnson:B</TD></TR>
+<TR><TD>279.23475</TD><TD>+38.78369</TD><TD>J/PASP/122/885/table1</TD><TD>recno=3173</TD><TD>138.55e+3</TD><TD>599.</TD><TD></TD><TD>2MASS:Ks</TD></TR>
+<TR><TD>279.23475</TD><TD>+38.78369</TD><TD>J/PASP/122/885/table1</TD><TD>recno=3173</TD><TD>181.75e+3</TD><TD>1.08e+3</TD><TD></TD><TD>2MASS:H</TD></TR>
+<TR><TD>279.23475</TD><TD>+38.78369</TD><TD>J/PASP/122/885/table1</TD><TD>recno=3173</TD><TD>241.96e+3</TD><TD>1.86e+3</TD><TD></TD><TD>2MASS:J</TD></TR>
+<TR><TD>279.23473</TD><TD>+38.78369</TD><TD>J/other/JAVSO/42.443/ugriz</TD><TD>HD=172167</TD><TD>541.43e+3</TD><TD>3.54e+3</TD><TD></TD><TD>Johnson:V</TD></TR>
+</TABLEDATA></DATA>
+
+<INFO name="Warning" value="+++ignored SESAME_SERVER (not http://?); use default"/>
+<INFO name="Warning" value="I don't close META connection"/>
+<INFO name="Warning" value="I don't close META connection"/>
+<INFO name="Warning" value="I don't close META connection"/>
+<INFO name="Warning" value="I don't close META connection"/>
+<INFO name="Warning" value="I don't close META connection"/>
+<INFO name="Warning" value="+++meta_fill(J/A+AS/92/1/table1) SED search(colid=8(!=7 DE) not found!"/>
+<INFO name="Warning" value="+++meta_fill(J/A+AS/92/1/stars) SED search(colid=7(!=6 DEJ2000) not found!"/>
+<INFO name="Warning" value="+++meta_fill(J/A+AS/92/1/stars) SED search(colid=8(!=7 Bmag) not found!"/>
+  </TABLE>
+</RESOURCE>
+</VOTABLE>
