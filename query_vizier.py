@@ -28,6 +28,7 @@ import requests
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
 import astropy.units as u
+import pdb
 
 ## Debugging module and intital setup
 import logging
@@ -71,7 +72,7 @@ class VizierCatalog(object):
         ## Go through Vizier queries 
         vizier_data = self.get_all_dataframes(source_list, source_id=source_id, radius=radius)
         return vizier_data, self.source_info
-    
+
     def get_all_dataframes(self, source_list, source_id=None, radius=1.5):
         """ Create a catalog containing all the photometric data from Vizier for a list of sources
 
@@ -126,7 +127,7 @@ class VizierCatalog(object):
                 logging.critical('Invalid filename passed to read_vo_table')
                 raise 
         return tab.to_pandas()
-    
+
     def _download_from_vizier(self, url, filename):
         """ Download the VOTable from Vizier Photometric Table and save to designated filename.
     
@@ -168,7 +169,7 @@ class VizierCatalog(object):
                 url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:4.2f}'.format(coords[0], coords[1], float(radius))
                 logging.debug('{:}'.format(url))
         return url
-        
+
     def _replace_frequency_with_wavelength(self, catalog):
         """ Converts the column sed_freq to sed_wave with the appropriate units.
 
@@ -179,7 +180,7 @@ class VizierCatalog(object):
         df.loc[df['sed_wave'] < 0, 'sed_wave'] = np.nan
         df.drop('sed_freq', axis=1, inplace=True)
         return df
-    
+
     def _check_coords(self, position):
         """ Check that a source position is in the correct format. If not change to default coords.
 
@@ -191,6 +192,9 @@ class VizierCatalog(object):
             source_pos - Tuple of (ra,dec) in degrees.
         """
         in_degrees = isinstance(position[0], (float, int)) & isinstance(position[1], (float, int))
+      # pdb.set_trace()
+        if isinstance(position[0],(np.ndarray, list)):
+             position = (tuple(position[0]), tuple(position[1]))
         if not in_degrees:
             try:
                 coords = SkyCoord(position[0], position[1], unit=(u.hourangle, u.deg))
