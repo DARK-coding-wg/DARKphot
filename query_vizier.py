@@ -167,7 +167,6 @@ class VizierCatalog(object):
                 raise IOError('Provided Source is not of correct type. Must be either a tuple of (ra, dec) or a string of name')
             else:
                 url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:4.2f}'.format(coords[0], coords[1], float(radius))
-                logging.debug('{:}'.format(url))
         return url
 
     def _replace_frequency_with_wavelength(self, catalog):
