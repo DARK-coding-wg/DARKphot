@@ -30,11 +30,11 @@ class TestQuery(unittest.TestCase):
     def assert_equal_pos(self, pos1, pos2, delta=None):
         """ Check two positions and make sure they're the same within a certain distance """
         if delta is None:
-            delta = 0.01/3600.
+            delta = 0.01/3600.  # 1/10 arcsec
         pos1 = self.vizier._check_coords(pos1)
         pos2 = self.vizier._check_coords(pos2)
-        self.assertAlmostEqual(pos1[0], pos2[0], delta=delta)  # 1/10 arcsec
-        self.assertAlmostEqual(pos1[1], pos2[1], delta=delta)  # 1/10 arcsec
+        self.assertAlmostEqual(pos1[0], pos2[0], delta=delta)  
+        self.assertAlmostEqual(pos1[1], pos2[1], delta=delta)  
         
     ### Test for _replace_frequency_with_wavelength ###
     def test_freq_to_wave(self):
