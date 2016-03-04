@@ -13,12 +13,16 @@
 #
 
 import unittest
+import os
 import pandas as pd
 import numpy as np
 import pandas.util.testing as pdt
 from query_vizier import VizierCatalog
 import pdb
 
+import logging
+logging.disable(logging.CRITICAL)  # Turns off debug messages
+        
 ##################
 ### Unit Tests ###
 ##################
@@ -52,8 +56,25 @@ class TestQuery(unittest.TestCase):
             vega_url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c=Vega&-c.rs=1.5'
             self.vizier._download_from_vizier(vega_url, vega_path)
         vega_table = self.vizier._read_vo_table(vega_path)
-        self.assert_equal_pos(vega_table
+        vega_pos = (279.23473333333334, 38.78368888888889)
+        self.assert_equal_pos((vega_table['_RAJ2000'].mean(), vega_table['_DEJ2000'].mean()), vega_pos, delta=1.5/3600.)
 
+    def test_read_non_existant_file(self):
+        """ Check to make sure the right Exceptions are raised if trying to read a non-existant filename"""
+        bad_path = 'test_data/non_existant_file.vot'
+        if os.path.exists(bad_path):
+            os.remove(bad_path)
+        with self.assertRaises(IOError):
+            self.vizier._read_vo_table(bad_path)
+
+    def test_empty_file(self):
+        """ Check to make sure the right Exceptions are raised if trying to read a votable with no data """
+        empty_path = 'test_data/empty_votable.vot'
+        if not os.path.exists(empty_path):
+            empty_url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c=not_a_source&-c.rs=1.5'
+            self.vizier._download_from_vizier(empty_url, empty_path)
+        with self.assertRaises(ValueError):
+            empty_table = self.vizier._read_vo_table(empty_path)
         
     ### Test for _create_url ###
     def test_create_url_name_input(self):
