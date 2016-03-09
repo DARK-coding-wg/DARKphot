@@ -63,7 +63,15 @@ class LocalCatalog(object):
             id_names = inter_catalog[name_id_col]
             #freq = 2.998E18 / float(central_wavelength) # Central wavelength is in AA
             cen_wavelenght = central_wavelength * 1.e-4 # Wavelength from AA to micron
-            inter_data_frame = pd.DataFrame({'_ID':id_names,
+
+            #Creating dataframe for unique names of objects
+            names_frame = pd.DataFrame({'name':id_names})
+            names_frame.drop_duplicates
+
+            # Extract IDs from names frame
+            IDs = names_frame.name[names_frame.name == id_names].index.tolist()
+
+            inter_data_frame = pd.DataFrame({'_ID':IDs,
                                              '_RAJ2000':ra_values,
                                              '_DEJ2000':dec_values,
                                              #'sed_freq':len(ra_values)*[freq],
