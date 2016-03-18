@@ -191,7 +191,7 @@ class VizierCatalog(object):
             source_pos - Tuple of (ra,dec) in degrees.
         """
         in_degrees = isinstance(position[0], (float, int)) & isinstance(position[1], (float, int))
-      # pdb.set_trace()
+        
         if isinstance(position[0],(np.ndarray, list)):
              position = (tuple(position[0]), tuple(position[1]))
         if not in_degrees:

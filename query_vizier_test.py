@@ -58,7 +58,6 @@ class TestQuery(unittest.TestCase):
         vega_table = self.vizier._read_vo_table(vega_path)
         vega_pos = (279.23473333333334, 38.78368888888889)
         self.assert_equal_pos((vega_table['_RAJ2000'].mean(), vega_table['_DEJ2000'].mean()), vega_pos, delta=1.5/3600.)
-
     def test_read_non_existant_file(self):
         """ Check to make sure the right Exceptions are raised if trying to read a non-existant filename"""
         bad_path = 'test_data/non_existant_file.vot'
@@ -66,7 +65,6 @@ class TestQuery(unittest.TestCase):
             os.remove(bad_path)
         with self.assertRaises(IOError):
             self.vizier._read_vo_table(bad_path)
-
     def test_empty_file(self):
         """ Check to make sure the right Exceptions are raised if trying to read a votable with no data """
         empty_path = 'test_data/empty_votable.vot'
@@ -81,27 +79,21 @@ class TestQuery(unittest.TestCase):
         """ Check _create_url with string name input"""
         url = self.vizier._create_url('vega')
         self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=vega&-c.rs=1.50")
-    
     def test_create_url_tuple_input(self):
         """ Check _create_url with tuple of floats"""
         url = self.vizier._create_url((279.234733,38.783))
         self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=279.234733+38.783000&-c.rs=1.50")
-    
     def test_create_url_zero_input(self):
         """ Check _create_url with tuple of 0 ints"""
         url = self.vizier._create_url((0,0))
-        print url
         self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=0.000000+0.000000&-c.rs=1.50")
-    
     def test_create_url_one_element_list(self):
         """ Check _create_url with tuple of floats"""
         self.assertRaises(IOError,self.vizier._create_url,(279.234733))
-    
     def test_create_url_negative_dec(self):
         """ Check that negative declination is handled correctly """
         url = self.vizier._create_url((1.0,-38.783),radius=10.)
         self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=1.000000-38.783000&-c.rs=10.00")
-    
     def test_create_url_negative_ra(self):
         """ Check that negative declination is handled correctly """
         url = self.vizier._create_url((-100.0,-38.783),radius=10.)
@@ -141,5 +133,5 @@ class TestQuery(unittest.TestCase):
             current_result = self.vizier._check_coords((r,d))
             pdt.assert_almost_equal(current_result, result)
 
-print('Hello Mikkel')
+# print('Hello Mikkel')
             
