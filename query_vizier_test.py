@@ -133,5 +133,3 @@ class TestQuery(unittest.TestCase):
             current_result = self.vizier._check_coords((r,d))
             pdt.assert_almost_equal(current_result, result)
 
-# print('Hello Mikkel')
-            
