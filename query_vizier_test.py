@@ -142,10 +142,4 @@ class TestQuery(unittest.TestCase):
             pdt.assert_almost_equal(current_result, result)
 
 
-
-                    ### Test for download_from_vizier ###
-        def test_download_from_vizier(self):
-            # Did it download a file 
-            # Assert error if vo table is empty (or non-empty)
-            # Did it download the observation from correct position
             
