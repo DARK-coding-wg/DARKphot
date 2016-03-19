@@ -133,22 +133,67 @@ class TestQuery(unittest.TestCase):
             current_result = self.vizier._check_coords((r,d))
             pdt.assert_almost_equal(current_result, result)
 
-    def test_check_coords_edge_cases(self):
-        """Check that unphysical inpiut is handled appropriately"""
-        # RAinput  = [0,np.nan,-1,361,np.inf,1e-30,1e30]
-        # decinput = [0,np.nan,-91,91,np.inf,1e-30,1e30]
-        # RAokay   = 30.
-        # decokay  = 30.
-        # for r,d in zip(RAinput,decinput):
-        #     try:
-        #         current_result = self.vizier._check_coords((r,decokay))
-        #         print r,current_result
-        #     except:
-        #         print r, 'failed'
+    def test_check_coords_ValueError(self):
+        """Test that wacky numbers and numbers outside sensible range raise an error"""
+        RAfail  = [np.nan,-1,361,np.inf,1e30]
+        decfail = [np.nan,-91,91,np.inf,1e30]
+        for r in RAfail:
+            with self.assertRaises(ValueError): self.vizier._check_coords((r,30.))
+        for d in decfail:
+            with self.assertRaises(ValueError): self.vizier._check_coords((30.,d))
 
-        #     try:
-        #         current_result_dec = self.vizier._check_coords((d,raokay))
-        #         print d, current_result
-        #     except:
-        #         print d, 'failed'
-        # with self.assertRaises(ValueError): self.vizier._check_coords((np.nan, 0.))
+    def test_check_coords_SystemExit(self):
+        """Test that numbers outside sensible range in tuples, and non-sensible strings, raise an error"""
+        RAfail  = [(25,30,0),'wallah']#, (-12,30,0)] <-- Okay so RA = -12 is allowed. It shouldn't be...
+        decfail = [(91,30,0), (-91,30,0), 'billah']
+        for r in RAfail:
+            with self.assertRaises(SystemExit): self.vizier._check_coords((r,30.))
+        for d in decfail:
+            with self.assertRaises(SystemExit): self.vizier._check_coords((30.,d))
+
+    def test_check_coords_TypeError(self):
+        """Test that non-sensible strings in tuples and Nones raise an error"""
+        RAfail  = [('wallah',30,0), None, (None,30,0)]
+        decfail = [('billah',30,0), None, (None,30,0)]
+        for r in RAfail:
+            with self.assertRaises(TypeError): self.vizier._check_coords((r,30.))
+        for d in decfail:
+            with self.assertRaises(TypeError): self.vizier._check_coords((30.,d))
+
+    def test_check_coords_NameError(self):
+        """Test that undefined variables raise an error"""
+        with self.assertRaises(NameError): self.vizier._check_coords(((wallah,30,0), 30.))
+        with self.assertRaises(NameError): self.vizier._check_coords(( wallah,       30.))
+        with self.assertRaises(NameError): self.vizier._check_coords((30.,(billah,30,0)))
+        with self.assertRaises(NameError): self.vizier._check_coords((30., billah      ))
+        
+    def test_check_coords_ValidInput(self):
+        """Test that edge cases work"""
+        RAokay  = [0, 1e-30, (1e-30,30,0)]
+        decokay = [0, 1e-30, (1e-30,30,0)]
+        raised  = False
+
+        for r in RAokay:
+            try:
+                self.vizier._check_coords((r,30.))
+            except:
+                raised = True
+            self.assertFalse(raised)
+
+        for d in decokay:
+            try:
+                self.vizier._check_coords((30.,d))
+            except:
+                raised = True
+            self.assertFalse(raised)
+
+
+
+
+
+
+
+
+
+
+
