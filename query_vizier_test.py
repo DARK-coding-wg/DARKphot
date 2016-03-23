@@ -142,15 +142,6 @@ class TestQuery(unittest.TestCase):
         for d in decfail:
             with self.assertRaises(ValueError): self.vizier._check_coords((30.,d))
 
-    # def test_check_coords_SystemExit(self):
-    #     """Test that numbers outside sensible range in tuples, and non-sensible strings, raise an error"""
-    #     RAfail  = [(25,30,0),'wallah']
-    #     decfail = [(91,30,0), (-91,30,0), 'billah']
-    #     for r in RAfail:
-    #         with self.assertRaises(SystemExit): self.vizier._check_coords((r,30.))
-    #     for d in decfail:
-    #         with self.assertRaises(SystemExit): self.vizier._check_coords((30.,d))
-
     def test_check_coords_TypeError(self):
         """Test that non-sensible strings in tuples and Nones raise an error"""
         RAfail  = [('wallah',30,0), None, (None,30,0)]
@@ -186,6 +177,31 @@ class TestQuery(unittest.TestCase):
             except:
                 raised = True
             self.assertFalse(raised)
+
+    def test_download_from_vizier(self):
+        """ Check the download of a url """
+        vega_url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c=Vega&-c.rs=1.5'
+        # vega_url = 'http://www.google.dk'
+        vega_path    = 'test_data/test_download_from_vizier.vot'
+        self.vizier._download_from_vizier(vega_url, vega_path)
+        self.assertTrue(os.path.exists(vega_path))
+        try:
+            os.remove(vega_path)
+        except:
+            print vega_path + " didn't download properly."
+
+    def test_download_vega_table(self):
+        """ Make sure the vega table is being downloaded correctly """
+        vega_path = 'test_data/vega_downloaded_table.vot'
+        vega_url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c=Vega&-c.rs=1.5'
+        self.vizier._download_from_vizier(vega_url, vega_path)
+        vega_table = self.vizier._read_vo_table(vega_path)
+        vega_pos = (279.23473333333334, 38.78368888888889)
+        self.assert_equal_pos((vega_table['_RAJ2000'].mean(), vega_table['_DEJ2000'].mean()), vega_pos, delta=1.5/3600.)
+        try:
+            os.remove(vega_path)
+        except:
+            print vega_path + " didn't download properly" 
 
 
 
