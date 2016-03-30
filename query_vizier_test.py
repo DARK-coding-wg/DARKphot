@@ -203,8 +203,19 @@ class TestQuery(unittest.TestCase):
         except:
             print vega_path + " didn't download properly" 
 
+    ###Test get_all_dataframes###
 
+    def test_source_id_not_provided(self):
+        source_list = [(187.27832916,2.05199), 'not_a_source', ('18h 36m 56.3364s','+38:47:1.291'), 'Vega']
+        phot        = self.vizier.get_all_dataframes(source_list, source_id=None, radius=1.5)
+        self.assertTrue(all(phot['source_id'].unique() == [0, 2, 3]))
 
+    def test_source_id_provided(self):
+        source_list = [(187.27832916,2.05199), 'not_a_source', ('18h 36m 56.3364s','+38:47:1.291'), 'Vega']
+        source_id = [100, -6, '23', 4.5]
+        phot        = self.vizier.get_all_dataframes(source_list, source_id=source_id, radius=1.5)
+        for ii, src_id in enumerate([100, '23', 4.5]):
+            self.assertAlmostEqual(src_id, phot['source_id'].unique()[ii])
 
 
 

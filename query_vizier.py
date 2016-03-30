@@ -49,25 +49,46 @@ class VizierCatalog(object):
             source_info - pandas dataframe containing the names, positions, and source_id of each input source.
         """
         # Figure out if inputs are names or positions
-        names = []
-        pos = []
-        source_id = []
-
+        # names = []
+        # pos = []
+        clean_source_id = []
+        clean_source_list = []
         for ii, source in enumerate(source_list):
             # Single string = Source name
+        #     if isinstance(source, str):
+        #         names.append(source)
+        #         clean_source_list.append(source)
+        #         pos.append((np.nan, np.nan))
+        #         source_id.append(ii)
+        #     else:
+        #         names.append(np.nan)
+        #         try:
+        #             formatted_pos = self._check_coords(source)
+        #         except:
+        #             print 'Source {:} with id {:} was not a valid name or position'.format(source, ii)
+        #             pos.append(np.nan, np.nan)
+        #             clean_source_list.append(np.nan)
+        #         else:
+        #             pos.append(formatted_pos)
+        #             clean_source_list.append(formatted_pos)
+        #         finally:
+        #             source_id.append(ii)
+        # # Create pandas dataframe containing source_id & source name and/or position
+        # self.source_info = pd.DataFrame({'names': names, 'positions': pos, 'source_id': source_id, 'input': source_list})
             if isinstance(source, str):
-                names.append(source)
-                pos.append((np.nan, np.nan))
-                source_id.append(ii)
+                clean_source_list.append(source)
+                clean_source_id.append(ii)
             else:
-                names.append(np.nan)
-                pos.append(self._check_coords(source))
-                source_id.append(ii)
-
-        # Create pandas dataframe containing source_id & source name and/or position
-        self.source_info = pd.DataFrame({'names': names, 'positions': pos, 'source_id': source_id, 'input': source_list})
+                try: 
+                    formatted_pos = self._check_coords(source)
+                except:
+                    print 'Source {:} with id {:} was not a valid name or position'.format(source, ii)
+                else:
+                    clean_source_list.append(formatted_pos)
+                    clean_source_id.append(ii)
+        self.source_info = pd.DataFrame({'source_id': range(len(source_list)), 'source': source_list})
         # Go through Vizier queries
-        vizier_data = self.get_all_dataframes(source_list, source_id=source_id, radius=radius)
+        vizier_data = self.get_all_dataframes(clean_source_list, source_id=clean_source_id, radius=radius)
         return vizier_data, self.source_info
 
     def get_all_dataframes(self, source_list, source_id=None, radius=1.5):
@@ -85,7 +106,7 @@ class VizierCatalog(object):
         if source_id is None:
             source_id = np.arange(len(source_list))
         list_of_frames = []
-        vot_name = 'test_vo_table.vot'
+        vot_name = 'temp.vot'
         for ii, source in enumerate(source_list):
             url = self._create_url(source, radius=radius)
             self._download_from_vizier(url, vot_name)
@@ -236,15 +257,17 @@ def parse_args():
 ############
 if __name__ == '__main__':
     # Process command line arguments
-    parse_args()
+    # parse_args()
 
     # A couple sources, including one that doesn't have any counterparts
-    ra_list = [187.27832916, 150.231314, 149.426254, '15 34 57.224']
-    dec_list = [2.05199, -4.1234, 2.073906, '+23 30 11.610']
+    # ra_list = [187.27832916, 150.231314, 149.426254, '15 34 57.224']
+    # dec_list = [2.05199, -4.1234, 2.073906, '+23 30 11.610']
     # ra_list = ['14:23:45.45'] #
     # dec_list = ['02:10:45.45'] #
-    name_list = ['vega', 'ic348', 'not_a_source']
+    # name_list = ['vega', 'ic348', 'not_a_source']
+
+    source_list = [(187.27832916,2.05199), ('18h 36m 56.3364s','+38:47:1.291'), 'Vega', 'not_a_source']
 
     vizier = VizierCatalog()
-    pos_phot, pos_sources = vizier.query_vizier(zip(ra_list, dec_list))
-    named_phot, named_sources = vizier.query_vizier(name_list)
+    # pos_phot, pos_sources = vizier.query_vizier(zip(ra_list, dec_list))
+    named_phot, named_sources = vizier.query_vizier(source_list)
