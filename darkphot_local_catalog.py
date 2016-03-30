@@ -1,5 +1,5 @@
 import numpy as np
-
+from types import *
 ############################
 # Main class: LocalCatalog #
 ############################
@@ -37,8 +37,8 @@ class LocalCatalog(object):
         self.fname_input_catalog = fname_input_catalog
         self.fname_object_sel_names = fname_object_sel_names
 
-        col_names_flux, col_names_fluxerror, central_wavelengths = \
-                                        self._read_parameter_file()
+        col_flux_names, col_fluxerror_names, central_wavelengths = \
+            self._read_parameter_file()
 
         # Checking for the file_format (currently based on the file ending)
         file_format = fname_input_catalog.split('.')[-1]
@@ -56,7 +56,7 @@ class LocalCatalog(object):
                 inter_catalog = inter_catalog[mask]
 
         for col_name_flux, col_name_fluxerror, central_wavelength in \
-                zip(col_names_flux, col_names_fluxerror, central_wavelengths):
+                zip(col_flux_names, col_fluxerror_names, central_wavelengths):
             fluxes = inter_catalog[col_name_flux]
             flux_errors = inter_catalog[col_name_fluxerror]
             ra_values, dec_values = inter_catalog[name_ra_col], inter_catalog[name_dec_col]
@@ -88,28 +88,40 @@ class LocalCatalog(object):
         # identifier
         self.data_frame.index = range(len(self.data_frame))
 
-
     def _read_parameter_file(self):
         """ Read in the parameter file (private) """
 
         # TODO: Needs checking of potential problems with the input file
-        with open(self.fname_parameter_file,'r') as f:
-            col_names_flux = []
-            col_names_fluxerror = []
+        extension_name = self.fname_parameter_file.split(".")[-1]
+        assert extension_name == "param", \
+            "Input file extension needs to be .param. Currently it is ."+str(extension_name)
+
+        with open(self.fname_parameter_file, 'r') as f:
+
+            col_flux_names = []
+            col_fluxerror_names = []
             central_wavelengths = []
+            ii = 0
             for line in f:
                 if line[0] == '#':
+                    ii += 1
                     continue
                 else:
+                    ii += 1
                     inter = line.strip(' \n\t\n')
                     inter = inter.split()
-                    col_names_flux.append(inter[0])
-                    col_names_fluxerror.append(inter[1])
+
+                    try:
+                        float(inter[0])
+                    except ValueError:
+                        raise ValueError("Input type of 1st column at line "+str(ii)+" contains only digits. It should be a string")
+                        
+                    col_flux_names.append(inter[0])
+                    col_fluxerror_names.append(inter[1])
                     central_wavelengths.append(float(inter[2]))
 
-        return col_names_flux, col_names_fluxerror, central_wavelengths
 
-
+        return col_flux_names, col_fluxerror_names, central_wavelengths
 
     def _read_sel_object_names(self):
         """
@@ -117,7 +129,6 @@ class LocalCatalog(object):
         Returns:
 
         """
-
         # TODO: Needs checking of potential problems with the input file
         with open(self.fname_object_sel_names, 'r') as f:
             self.object_sel_names = []
@@ -132,10 +143,7 @@ class LocalCatalog(object):
 
         return name_sel
 
-
-
-
-    def _read_text_catalog(self,file_format):
+    def _read_text_catalog(self, file_format):
         """ Read in the catalog (private) """
 
         import astropy.io.ascii as asciitable
