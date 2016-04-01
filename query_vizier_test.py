@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# 
+#
 # Program: query_vizier_test
 #
 # Author: Nick Lee
@@ -9,7 +9,7 @@
 # Description: Unit Tests for the Vizier Query modules
 #
 # To Do:
-#    
+#
 #
 
 import unittest
@@ -21,8 +21,10 @@ from query_vizier import VizierCatalog
 import pdb
 
 import logging
-logging.disable(logging.CRITICAL)  # Turns off debug messages
-        
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
+logging.disable(logging.CRITICAL)  # Uncomment to turn off error messages
+
 ##################
 ### Unit Tests ###
 ##################
@@ -37,15 +39,15 @@ class TestQuery(unittest.TestCase):
             delta = 0.01/3600.  # 1/10 arcsec
         pos1 = self.vizier._check_coords(pos1)
         pos2 = self.vizier._check_coords(pos2)
-        self.assertAlmostEqual(pos1[0], pos2[0], delta=delta)  
-        self.assertAlmostEqual(pos1[1], pos2[1], delta=delta)  
-        
+        self.assertAlmostEqual(pos1[0], pos2[0], delta=delta)
+        self.assertAlmostEqual(pos1[1], pos2[1], delta=delta)
+
     ### Test for _replace_frequency_with_wavelength ###
     def test_freq_to_wave(self):
         """ Check conversion from frequency in GHz to wavelength in microns """
-        input_frame = pd.DataFrame({'source_id':np.arange(5), 'sed_freq':[100, 0.01, 0, np.nan, -99]})
+        input_frame = pd.DataFrame({'source_id': np.arange(5), 'sed_freq': [100, 0.01, 0, np.nan, -99]})
         new_frame = self.vizier._replace_frequency_with_wavelength(input_frame)
-        wavelengths = pd.DataFrame({'source_id':np.arange(5), 'sed_wave':[2.997925e3, 2.997925e7, np.inf, np.nan, np.nan]})
+        wavelengths = pd.DataFrame({'source_id': np.arange(5), 'sed_wave': [2.997925e3, 2.997925e7, np.inf, np.nan, np.nan]})
         pdt.assert_series_equal(wavelengths['sed_wave'], new_frame['sed_wave'])
 
     ## Tests for _read_vo_table
@@ -73,32 +75,32 @@ class TestQuery(unittest.TestCase):
             self.vizier._download_from_vizier(empty_url, empty_path)
         with self.assertRaises(ValueError):
             empty_table = self.vizier._read_vo_table(empty_path)
-        
+
     ### Test for _create_url ###
     def test_create_url_name_input(self):
         """ Check _create_url with string name input"""
         url = self.vizier._create_url('vega')
-        self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=vega&-c.rs=1.50")
+        self.assertTrue(url == "http://vizier.u-strasbg.fr/viz-bin/sed?-c=vega&-c.rs=1.50")
     def test_create_url_tuple_input(self):
         """ Check _create_url with tuple of floats"""
-        url = self.vizier._create_url((279.234733,38.783))
-        self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=279.234733+38.783000&-c.rs=1.50")
+        url = self.vizier._create_url((279.234733, 38.783))
+        self.assertTrue(url == "http://vizier.u-strasbg.fr/viz-bin/sed?-c=279.234733+38.783000&-c.rs=1.50")
     def test_create_url_zero_input(self):
         """ Check _create_url with tuple of 0 ints"""
-        url = self.vizier._create_url((0,0))
-        self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=0.000000+0.000000&-c.rs=1.50")
+        url = self.vizier._create_url((0, 0))
+        self.assertTrue(url == "http://vizier.u-strasbg.fr/viz-bin/sed?-c=0.000000+0.000000&-c.rs=1.50")
     def test_create_url_one_element_list(self):
         """ Check _create_url with tuple of floats"""
-        self.assertRaises(IOError,self.vizier._create_url,(279.234733))
+        self.assertRaises(IOError, self.vizier._create_url, (279.234733))
     def test_create_url_negative_dec(self):
         """ Check that negative declination is handled correctly """
-        url = self.vizier._create_url((1.0,-38.783),radius=10.)
-        self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=1.000000-38.783000&-c.rs=10.00")
+        url = self.vizier._create_url((1.0, -38.783), radius=10.)
+        self.assertTrue(url == "http://vizier.u-strasbg.fr/viz-bin/sed?-c=1.000000-38.783000&-c.rs=10.00")
     def test_create_url_negative_ra(self):
         """ Check that negative right ascension is handled correctly """
-        url = self.vizier._create_url(((-12.0,0,0),-38.783),radius=10.)
-        self.assertTrue(url=="http://vizier.u-strasbg.fr/viz-bin/sed?-c=180.000000-38.783000&-c.rs=10.00")
-        
+        url = self.vizier._create_url(((-12.0, 0, 0), -38.783), radius=10.)
+        self.assertTrue(url == "http://vizier.u-strasbg.fr/viz-bin/sed?-c=180.000000-38.783000&-c.rs=10.00")
+
 
     ### Test for _check_coords ###
     def test_check_coords_formats(self):
@@ -110,12 +112,12 @@ class TestQuery(unittest.TestCase):
                     'signed coloncstrings',
                     'hms dms',
                     'hms dms with spaces',
-                   'space strings']
-        RA      = pd.Series([(18,36,56.3364),
+                    'space strings']
+        ra      = pd.Series([(18,36,56.3364),
                              [18,36,56.3364],
                     np.array([18,36,56.3364]),
                              '18:36:56.3364',
-                            '+18:36:56.3364',
+                             '+18:36:56.3364',
                              '18h36m56.3364s',
                              '18h 36m 56.3364s',
                              '18 36 56.3364'], index=formats, name='RA')
@@ -123,66 +125,62 @@ class TestQuery(unittest.TestCase):
                              [38,47,1.291],
                     np.array([38,47,1.291]),
                              '38:47:1.291',
-                            '+38:47:1.291',
+                             '+38:47:1.291',
                              '38d47m1.291s',
                              '38d 47m 1.291s',
-                             '38 47 1.291'],   index=formats, name='dec')
-        tests   = pd.concat([RA, dec], axis=1)  #Concat Series to a DataFrame
-        result  = (279.234735, 38.783691944)    #This should be the result of all calls
-        for r,d in zip(tests['RA'], tests['dec']):
-            current_result = self.vizier._check_coords((r,d))
+                             '38 47 1.291'], index=formats, name='dec')
+        tests = pd.concat([ra, dec], axis=1)  #Concat Series to a DataFrame
+        result = (279.234735, 38.783691944)  #This should be the result of all calls
+        for rr, dd in zip(tests['RA'], tests['dec']):
+            current_result = self.vizier._check_coords((rr, dd))
             pdt.assert_almost_equal(current_result, result)
 
     def test_check_coords_ValueError(self):
         """Test that wacky numbers and numbers outside sensible range raise an error"""
-        RAfail  = [np.nan,-1,361,np.inf,1e30,(25,30,0),'wallah'] #, (-12,30,0)] <-- Okay so RA = -12 is allowed. It shouldn't be...
-        decfail = [np.nan,-91,91,np.inf,1e30,(91,30,0), (-91,30,0), 'billah']
-        for r in RAfail:
-            with self.assertRaises(ValueError): self.vizier._check_coords((r,30.))
-        for d in decfail:
-            with self.assertRaises(ValueError): self.vizier._check_coords((30.,d))
+        RAfail = [np.nan, -1, 361, np.inf, 1e30, (25, 30, 0), 'wallah'] #, (-12,30,0)] <-- Okay so RA = -12 is allowed. It shouldn't be...
+        decfail = [np.nan, -91, 91, np.inf, 1e30, (91, 30, 0), (-91, 30, 0), 'billah']
+        for ra in RAfail:
+            with self.assertRaises(ValueError):
+                self.vizier._check_coords((ra, 30.))
+        for dec in decfail:
+            with self.assertRaises(ValueError):
+                self.vizier._check_coords((30., dec))
 
     def test_check_coords_TypeError(self):
         """Test that non-sensible strings in tuples and Nones raise an error"""
-        RAfail  = [('wallah',30,0), None, (None,30,0)]
-        decfail = [('billah',30,0), None, (None,30,0)]
-        for r in RAfail:
-            with self.assertRaises(TypeError): self.vizier._check_coords((r,30.))
-        for d in decfail:
-            with self.assertRaises(TypeError): self.vizier._check_coords((30.,d))
+        RAfail = [('wallah', 30, 0), None, (None, 30, 0)]
+        decfail = [('billah', 30, 0), None, (None, 30, 0)]
+        for ra in RAfail:
+            with self.assertRaises(TypeError):
+                self.vizier._check_coords((ra, 30.))
+        for dec in decfail:
+            with self.assertRaises(TypeError):
+                self.vizier._check_coords((30., dec))
 
     def test_check_coords_NameError(self):
         """Test that undefined variables raise an error"""
-        with self.assertRaises(NameError): self.vizier._check_coords(((wallah,30,0), 30.))
-        with self.assertRaises(NameError): self.vizier._check_coords(( wallah,       30.))
-        with self.assertRaises(NameError): self.vizier._check_coords((30.,(billah,30,0)))
-        with self.assertRaises(NameError): self.vizier._check_coords((30., billah      ))
-        
+        with self.assertRaises(NameError):
+            self.vizier._check_coords(((wallah, 30, 0), 30.))
+        with self.assertRaises(NameError):
+            self.vizier._check_coords((wallah, 30.))
+        with self.assertRaises(NameError):
+            self.vizier._check_coords((30., (billah, 30, 0)))
+        with self.assertRaises(NameError):
+            self.vizier._check_coords((30., billah))
+
     def test_check_coords_ValidInput(self):
         """Test that edge cases work (is 'edge case' the wrong term here?)"""
-        RAokay  = [0, 1e-30, (1e-30,30,0)]
-        decokay = [0, 1e-30, (1e-30,30,0)]
-        raised  = False
-
-        for r in RAokay:
-            try:
-                self.vizier._check_coords((r,30.))
-            except:
-                raised = True
-            self.assertFalse(raised)
-
-        for d in decokay:
-            try:
-                self.vizier._check_coords((30.,d))
-            except:
-                raised = True
-            self.assertFalse(raised)
+        ra_okay = [0, 1e-30, (1e-30, 30, 0)]
+        dec_okay = [0, 1e-30, (1e-30, 30, 0)]
+        for ra in ra_okay:
+            self.vizier._check_coords((ra, 30.))
+        for dec in dec_okay:
+            self.vizier._check_coords((30., dec))
 
     def test_download_from_vizier(self):
         """ Check the download of a url """
         vega_url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c=Vega&-c.rs=1.5'
-        # vega_url = 'http://www.google.dk'
-        vega_path    = 'test_data/test_download_from_vizier.vot'
+        vega_path = 'test_data/test_download_from_vizier.vot'
         self.vizier._download_from_vizier(vega_url, vega_path)
         self.assertTrue(os.path.exists(vega_path))
         try:
@@ -201,22 +199,37 @@ class TestQuery(unittest.TestCase):
         try:
             os.remove(vega_path)
         except:
-            print vega_path + " didn't download properly" 
+            print vega_path + " didn't download properly"
 
-    ###Test get_all_dataframes###
-
+    ### Test get_all_dataframes ###
     def test_source_id_not_provided(self):
-        source_list = [(187.27832916,2.05199), 'not_a_source', ('18h 36m 56.3364s','+38:47:1.291'), 'Vega']
-        phot        = self.vizier.get_all_dataframes(source_list, source_id=None, radius=1.5)
+        source_list = [(187.27832916, 2.05199), 'not_a_source', ('18h 36m 56.3364s', '+38:47:1.291'), 'Vega']
+        phot = self.vizier.get_all_dataframes(source_list, source_id=None, radius=1.5)
         self.assertTrue(all(phot['source_id'].unique() == [0, 2, 3]))
 
     def test_source_id_provided(self):
-        source_list = [(187.27832916,2.05199), 'not_a_source', ('18h 36m 56.3364s','+38:47:1.291'), 'Vega']
+        source_list = [(187.27832916, 2.05199), 'not_a_source', ('18h 36m 56.3364s', '+38:47:1.291'), 'Vega']
         source_id = [100, -6, '23', 4.5]
-        phot        = self.vizier.get_all_dataframes(source_list, source_id=source_id, radius=1.5)
+        phot = self.vizier.get_all_dataframes(source_list, source_id=source_id, radius=1.5)
         for ii, src_id in enumerate([100, '23', 4.5]):
             self.assertAlmostEqual(src_id, phot['source_id'].unique()[ii])
 
+    ### Test query_vizier ###
+    def test_query_vizier_source_id(self):
+        source_list = [(187.27832916, 2.05199), 'not_a_source', ('18h 36m 56.3364s', '+38:47:1.291'), (1, 2, 3), 'Vega']
+        data, source_info = self.vizier.query_vizier(source_list)
+        self.assertTrue(all(source_info['source_id'] == [0, 1, 2, 3, 4]))
+
+    def test_query_vizier_sources(self):
+        source_list = [(187.27832916, 2.05199), 'not_a_source', ('18h 36m 56.3364s', '+38:47:1.291'), (1, 2, 3), 'Vega']
+        data, source_info = self.vizier.query_vizier(source_list)
+        for ii, src_id in enumerate(source_list):
+            self.assertAlmostEqual(src_id, source_info.loc[ii, 'source'])
+
+    def test_query_vizier_data(self):
+        source_list = [(187.27832916, 2.05199), 'not_a_source', ('18h 36m 56.3364s' ,'+38:47:1.291'), (1, 2, 3), 'Vega']
+        data, source_info = self.vizier.query_vizier(source_list)
+        self.assertTrue(all(data['source_id'].unique() == [0, 2, 4]))
 
 
 

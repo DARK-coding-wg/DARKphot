@@ -32,8 +32,6 @@ logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s- %
 ###########
 # Classes #
 ###########
-
-
 class VizierCatalog(object):
     """ Class for creating a photometric catalog from Vizier """
 
@@ -48,48 +46,24 @@ class VizierCatalog(object):
             vizier_data - pandas dataframe containing all observations from Vizier and an additional source_id column that identifies which source each obsersvation is for
             source_info - pandas dataframe containing the names, positions, and source_id of each input source.
         """
-        # Figure out if inputs are names or positions
-        # names = []
-        # pos = []
+        source_info = pd.DataFrame({'source_id': range(len(source_list)), 'source': source_list})
         clean_source_id = []
         clean_source_list = []
         for ii, source in enumerate(source_list):
-            # Single string = Source name
-        #     if isinstance(source, str):
-        #         names.append(source)
-        #         clean_source_list.append(source)
-        #         pos.append((np.nan, np.nan))
-        #         source_id.append(ii)
-        #     else:
-        #         names.append(np.nan)
-        #         try:
-        #             formatted_pos = self._check_coords(source)
-        #         except:
-        #             print 'Source {:} with id {:} was not a valid name or position'.format(source, ii)
-        #             pos.append(np.nan, np.nan)
-        #             clean_source_list.append(np.nan)
-        #         else:
-        #             pos.append(formatted_pos)
-        #             clean_source_list.append(formatted_pos)
-        #         finally:
-        #             source_id.append(ii)
-        # # Create pandas dataframe containing source_id & source name and/or position
-        # self.source_info = pd.DataFrame({'names': names, 'positions': pos, 'source_id': source_id, 'input': source_list})
             if isinstance(source, str):
                 clean_source_list.append(source)
                 clean_source_id.append(ii)
             else:
-                try: 
+                try:
                     formatted_pos = self._check_coords(source)
                 except:
-                    print 'Source {:} with id {:} was not a valid name or position'.format(source, ii)
+                    logging.critical('Source {:} with id {:} was not a valid name or position'.format(source, ii))
                 else:
                     clean_source_list.append(formatted_pos)
                     clean_source_id.append(ii)
-        self.source_info = pd.DataFrame({'source_id': range(len(source_list)), 'source': source_list})
         # Go through Vizier queries
         vizier_data = self.get_all_dataframes(clean_source_list, source_id=clean_source_id, radius=radius)
-        return vizier_data, self.source_info
+        return vizier_data, source_info
 
     def get_all_dataframes(self, source_list, source_id=None, radius=1.5):
         """ Create a catalog containing all the photometric data from Vizier for a list of sources
@@ -161,9 +135,8 @@ class VizierCatalog(object):
         response.raise_for_status()       # Make sure url loaded properly
         with open(filename, 'wb') as vo_table:
             for ii, chunk in enumerate(response.iter_content(chunk_size=1024)):
-                if chunk:                 # filter out keep-alive new chunks
+                if chunk:  # filter out keep-alive new chunks
                     vo_table.write(chunk)
-                    # f.flush()
 
     def _create_url(self, source, radius=1.5):
         """ Make the correct URL for the Vizier query
@@ -211,25 +184,28 @@ class VizierCatalog(object):
         Returns:
             source_pos - Tuple of (RA,dec) in degrees.
         """
-        in_degrees = isinstance(position[0], (float, int)) & isinstance(position[1], (float, int))
-        if isinstance(position[0], (np.ndarray, list)):
-            position = (tuple(position[0]), tuple(position[1]))
-        if not in_degrees:
-            try:
-                coords = SkyCoord(position[0], position[1], unit=(u.hourangle, u.deg))
-                new_pos = (coords.ra.deg, coords.dec.deg)
-            except ValueError as exc:
-                print exc
-                raise 
-            except:
-                logging.critical('WARNING: RA and dec format cannot be read')
-                raise
+        if len(position) != 2:
+            raise IOError('Position {:} has the wrong number of elements'.format(position))
         else:
-            new_pos = (float(position[0]), float(position[1]))
-
-        if not (0 <= new_pos[0] <= 360):  raise ValueError('RA = {:.2f}, but should be in the range [0,360]'.format(new_pos[0]))
-        if not (-90 <= new_pos[1] <= 90): raise ValueError('dec should be in the range [-90,90]')
-
+            in_degrees = isinstance(position[0], (float, int)) & isinstance(position[1], (float, int))
+            if isinstance(position[0], (np.ndarray, list)):
+                position = (tuple(position[0]), tuple(position[1]))  # SkyCoord interprets lists as multiple sources, not hour/min/sec
+            if not in_degrees:
+                try:
+                    coords = SkyCoord(position[0], position[1], unit=(u.hourangle, u.deg))
+                    new_pos = (coords.ra.deg, coords.dec.deg)
+                except ValueError as exc:
+                    logging.critical(exc)
+                    raise
+                except:
+                    logging.critical('WARNING: RA and dec format cannot be read')
+                    raise
+            else:
+                new_pos = (float(position[0]), float(position[1]))
+            if not (0 <= new_pos[0] <= 360):
+                raise ValueError('RA = {:.2f}, but should be in the range [0,360]'.format(new_pos[0]))
+            if not (-90 <= new_pos[1] <= 90):
+                raise ValueError('dec should be in the range [-90,90]')
         return new_pos
 
 def parse_args():
@@ -266,7 +242,7 @@ if __name__ == '__main__':
     # dec_list = ['02:10:45.45'] #
     # name_list = ['vega', 'ic348', 'not_a_source']
 
-    source_list = [(187.27832916,2.05199), ('18h 36m 56.3364s','+38:47:1.291'), 'Vega', 'not_a_source']
+    source_list = [(187.27832916,2.05199), (1,2,3), ('18h 36m 56.3364s','+38:47:1.291'), 'Vega', 'not_a_source']
 
     vizier = VizierCatalog()
     # pos_phot, pos_sources = vizier.query_vizier(zip(ra_list, dec_list))
