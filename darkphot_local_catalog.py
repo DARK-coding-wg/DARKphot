@@ -1,6 +1,7 @@
 import numpy as np
 import types
 import numbers
+from help_functions import check_coords
 
 ############################
 # Main class: LocalCatalog #
@@ -53,6 +54,9 @@ class LocalCatalog(object):
         if self.fname_object_sel_names is not None:
 
             if self._read_sel_object_names(): # Returns False, if there is no object
+
+                print self.object_sel_coordinates #FIXME remove this line again
+
                 mask = get_match_mask_names(self.object_sel_names,
                                             inter_catalog[name_id_col])
                 inter_catalog = inter_catalog[mask]
@@ -129,7 +133,7 @@ class LocalCatalog(object):
 
         return col_flux_names, col_fluxerror_names, central_wavelengths
 
-    def _read_sel_object_names(self):
+    def _read_sel_object_names(self): # will be renamed to _read_sel_objects
         """
         Reading in the list of object names which shall be put into the catalog
         Returns:
@@ -138,14 +142,29 @@ class LocalCatalog(object):
         # TODO: Needs checking of potential problems with the input file
         with open(self.fname_object_sel_names, 'r') as f:
             self.object_sel_names = []
+            self.object_sel_coordinates = []
             name_sel = False
             for line in f:
                 if line[0] == '#':
                     continue
                 else:
                     inter = line.strip(' \n\t\n')
-                    self.object_sel_names.append(inter)
-                    name_sel = True # Only if there is a line, in the file specifying an object the selection will be activated
+                    inter = inter.split()
+                    if len(inter) == 2:
+                        inter = check_coords(inter)
+                        self.object_sel_coordinates.append(inter)
+
+                    elif len(inter) == 1:
+                        self.object_sel_names.append(inter)
+                    else:
+                        raise IOError('{:s}: Rows must have one '
+                                      '(object names) or two (RA Dec)'
+                                      ' columns'.format(self.fname_object_sel_names))
+
+                name_sel = True # Only if there is a line, in the file specifying an object the selection will be activated
+
+
+
 
         return name_sel
 
