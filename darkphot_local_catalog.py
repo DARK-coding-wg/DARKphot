@@ -1,5 +1,7 @@
 import numpy as np
-from types import *
+import types
+import numbers
+
 ############################
 # Main class: LocalCatalog #
 ############################
@@ -111,15 +113,19 @@ class LocalCatalog(object):
                     inter = line.strip(' \n\t\n')
                     inter = inter.split()
 
+                    # Check input formatting. Testing length of input filter and filter error. Testing if wavlength can be converted to float.
+                    assert len(inter[0]) == 2, \
+                        "Input parameter file needs to formatted as 'fJ efJ 12500'.\n Currently it is '"+str(inter)+"'. First column at line: "+str(ii)+", is formatted badly"
+                    assert len(inter[1]) == 3, \
+                        "Input parameter file needs to formatted as 'fJ efJ 12500'.\n Currently it is '"+str(inter)+"'. Second column at line: "+str(ii)+", is formatted badly"
                     try:
-                        float(inter[0])
+                        float(inter[2])
                     except ValueError:
-                        raise ValueError("Input type of 1st column at line "+str(ii)+" contains only digits. It should be a string")
-                        
+                        raise ValueError("Input parameter file needs to formatted as 'fJ efJ 12500'.\n Currently it is '"+str(inter)+"'. Third column at line: "+str(ii)+", is formatted badly")
+
                     col_flux_names.append(inter[0])
                     col_fluxerror_names.append(inter[1])
                     central_wavelengths.append(float(inter[2]))
-
 
         return col_flux_names, col_fluxerror_names, central_wavelengths
 
