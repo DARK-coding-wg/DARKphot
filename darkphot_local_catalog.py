@@ -64,7 +64,7 @@ class LocalCatalog(object):
             ra_values, dec_values = inter_catalog[name_ra_col], inter_catalog[name_dec_col]
             id_names = inter_catalog[name_id_col]
             #freq = 2.998E18 / float(central_wavelength) # Central wavelength is in AA
-            cen_wavelenght = central_wavelength * 1.e-4 # Wavelength from AA to micron
+            cen_wavelength = central_wavelength * 1.e-4 # Wavelength from AA to micron
 
             #Creating dataframe for unique names of objects
             names_frame = pd.DataFrame({'name':id_names})
@@ -77,7 +77,7 @@ class LocalCatalog(object):
                                              '_RAJ2000':ra_values,
                                              '_DEJ2000':dec_values,
                                              #'sed_freq':len(ra_values)*[freq],
-                                             'sed_wave':cen_wavelenght,
+                                             'sed_wave':cen_wavelength,
                                              'sed_flux':fluxes,
                                              'sed_eflux':flux_errors})
 
@@ -95,14 +95,18 @@ class LocalCatalog(object):
 
         # TODO: Needs checking of potential problems with the input file
         extension_name = self.fname_parameter_file.split(".")[-1]
-        assert extension_name == "param", \
-            "Input file extension needs to be .param. Currently it is ."+str(extension_name)
+        try:
+            assert extension_name == "param"
+        except AssertionError:
+            raise ValueError("Input file extension need to be .param. Currently it is ."+str(extension_name))
 
         with open(self.fname_parameter_file, 'r') as f:
 
             col_flux_names = []
             col_fluxerror_names = []
             central_wavelengths = []
+            value_error_msg = []
+            format_error_msg = []
             ii = 0
             for line in f:
                 if line[0] == '#':
@@ -113,20 +117,33 @@ class LocalCatalog(object):
                     inter = line.strip(' \n\t\n')
                     inter = inter.split()
 
-                    # Check input formatting. Testing length of input filter and filter error. Testing if wavlength can be converted to float.
-                    assert len(inter[0]) == 2, \
-                        "Input parameter file needs to formatted as 'fJ efJ 12500'.\n Currently it is '"+str(inter)+"'. First column at line: "+str(ii)+", is formatted badly"
-                    assert len(inter[1]) == 3, \
-                        "Input parameter file needs to formatted as 'fJ efJ 12500'.\n Currently it is '"+str(inter)+"'. Second column at line: "+str(ii)+", is formatted badly"
+                    try:
+                        assert len(inter) == 3
+                    except AssertionError:
+                        format_error_msg.append("Error at line "+str(ii).rjust(5)+": Input parameter file needs three columns, currently has "+str(len(inter))+".")
+                     # Testing if wavelength can be converted to float.
                     try:
                         float(inter[2])
                     except ValueError:
-                        raise ValueError("Input parameter file needs to formatted as 'fJ efJ 12500'.\n Currently it is '"+str(inter)+"'. Third column at line: "+str(ii)+", is formatted badly")
+                        value_error_msg.append("Error at line "+str(ii).rjust(5)+": Input central filter wavelength needs to be a float, currently it is '"+str(inter[2])+"'.")
 
                     col_flux_names.append(inter[0])
                     col_fluxerror_names.append(inter[1])
-                    central_wavelengths.append(float(inter[2]))
+                    try:
+                        central_wavelengths.append(float(inter[2]))
+                    except:
+                        pass
 
+            try:
+                assert len(format_error_msg) == 0 and len(value_error_msg) == 0
+            except AssertionError:
+                for ii in format_error_msg:
+                    print(ii)
+                for ii in value_error_msg:
+                    print(ii)
+                print("Execution stopped due to input error in input parameter file.")
+                #raise
+                exit()
         return col_flux_names, col_fluxerror_names, central_wavelengths
 
     def _read_sel_object_names(self):
