@@ -2,7 +2,7 @@
 #
 # Program: query_vizier
 #
-# Author: Nick Lee
+# Author: DARKphot
 #
 # Usage: ./query_vizier
 #
@@ -11,16 +11,30 @@
 import numpy as np
 import pandas as pd
 import os
-import argparse
 import warnings
 import requests
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
 import astropy.units as u
 
-# Debugging module and intital setup
+# Set up loggers
 import logging
-logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s- %(message)s')
+# Create logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+# Create console handler
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.WARNING)
+# Create text log handler
+file_handler = logging.FileHandler('logs/query_vizier.log', mode='w')
+file_handler.setLevel(logging.DEBUG)
+# Create formatter for both handlers
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s - %(message)s')
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+# Add both handlers to logger
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
 
 ###########
 # Classes #
@@ -29,17 +43,26 @@ logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s- %
 
 class VizierCatalog(object):
     """ Class for creating a photometric catalog from Vizier """
+    def __init__(self, table_name=None):
+        """
+        Keywords:
+            table_name - Set to the path of the temporary file that will be used to download data to. This file will be removed after each source query.
+        """
+        if table_name is None:
+            self.vot_name = 'temp_1082375601874365082764032817049327618.vot'
+        else:
+            self.vot_name = table_name
 
     def query_vizier(self, source_list, radius=1.5):
         """ Creates photometric table and source information table
 
         Args:
-            source_list - list of souces. Can be a list of (ra, dec) tuples or a list of names as strings. RA & Dec must be in decimal degrees.
+            source_list - list of souces. Each element in the list should be a string or an accepted position. Strings are passed to the Vizier database as is, so anything that Vizier accepts (names, positions, etc.) can be passed along as a string. Positions must be specified as 2-element list-like objects with position[0] = Right Ascension, position[1] = Declination. Acceptable formats for RA are (1) decimal degrees [float, int, or string], (2) or sexagisimal as 3-element list-like object of (hours/degrees, minutes, seconds) or strings formatted such as 'XX:XX:XX or 'XXhXXmXXs' or 'XX XX XX'. See astropy.SkyCoords for full list of accepted formats.
         Keywords:
-            radius - Defines region to search for counterparts in arcsec. Default is 1.5
+            radius - Defines region to search for counterparts in arcsec. Default is 1.5"
         Returns:
-            vizier_data - pandas dataframe containing all observations from Vizier and an additional source_id column that identifies which source each obsersvation is for
-            source_info - pandas dataframe containing the names, positions, and source_id of each input source.
+            vizier_data - pandas dataframe containing all observations from Vizier and an additional source_id column that identifies which source each observation is for
+            source_info - pandas dataframe containing the input sources and their corresponding source_id.
         """
         source_info = pd.DataFrame({'source_id': range(len(source_list)), 'source': source_list})
         clean_source_id = []
@@ -52,12 +75,16 @@ class VizierCatalog(object):
                 try:
                     formatted_pos = self._check_coords(source)
                 except:
-                    logging.critical('Source {:} with id {:} was not a valid name or position'.format(source, ii))
+                    logger.critical('Source {:} with id {:} was not a valid name or position'.format(source, ii))
                 else:
                     clean_source_list.append(formatted_pos)
                     clean_source_id.append(ii)
         # Go through Vizier queries
-        vizier_data = self._get_all_dataframes(clean_source_list, clean_source_id, radius=radius)
+        if radius > 0:
+            self.radius = radius
+        else:
+            raise IOError('Search radius must be positive')
+        vizier_data = self._get_all_dataframes(clean_source_list, clean_source_id)
         return vizier_data, source_info
 
     def _check_coords(self, position):
@@ -84,10 +111,10 @@ class VizierCatalog(object):
                     coords = SkyCoord(position[0], position[1], unit=(u.hourangle, u.deg))
                     new_pos = (coords.ra.deg, coords.dec.deg)
                 except ValueError as exc:
-                    logging.critical(exc)
+                    logger.critical(exc)
                     raise
                 except:
-                    logging.critical('WARNING: RA and dec format cannot be read')
+                    logger.critical('WARNING: RA and dec format cannot be read')
                     raise
             else:
                 new_pos = (float(position[0]), float(position[1]))
@@ -108,7 +135,7 @@ class VizierCatalog(object):
         else:
             return True
 
-    def _get_all_dataframes(self, source_list, source_id, radius=1.5):
+    def _get_all_dataframes(self, source_list, source_id):
         """ Create a catalog containing all the photometric data from Vizier for a list of sources
 
         Returns full output from Vizier, with a single added column of source_id.
@@ -122,38 +149,35 @@ class VizierCatalog(object):
         """
 
         list_of_frames = []
-        vot_name = 'temp_10823756018743650238475093864982764032817049327618.vot'
         for ii, source in enumerate(source_list):
-            url = self._create_url(source, radius=radius)
-            self._download_from_vizier(url, vot_name)
+            url = self._create_url(source)
+            self._download_from_vizier(url, self.vot_name)
             try:
-                photometry = self._read_vo_table(vot_name)
+                photometry = self._read_vo_table(self.vot_name)
             except ValueError:
-                logging.warning('No observations found via Vizier for source_id = {:}'.format(source_id[ii]))
+                logger.warning('No observations found via Vizier for source_id = {:}'.format(source_id[ii]))
             else:
                 n_rows = photometry.shape[0]
                 photometry['source_id'] = np.repeat(source_id[ii], n_rows)
                 list_of_frames.append(photometry)
             finally:
-                os.remove(vot_name)
+                os.remove(self.vot_name)
         all_frames = self._replace_frequency_with_wavelength(pd.concat(list_of_frames))
         return all_frames
 
-    def _create_url(self, source, radius=1.5):
-        """ Make the correct URL for the Vizier query
+    def _create_url(self, source):
+        """ Create the URL for the Vizier query
 
         Uses the format found at http://vizier.u-strasbg.fr/vizier/sed/doc/
         Args:
             source - Either a tuple of (ra, dec) in decimal degrees or a string that represents the name of the source
-        Keywords:
-            radius - Search radius in arcsec. Default is 1.5 arcsec.
         Returns:
             url - URL where VOTable from Vizier Photometric Table can be found
         """
         if isinstance(source, str):
-            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:}&-c.rs={:4.2f}'.format(source, float(radius))
+            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:s}&-c.rs={:4.2f}'.format(source, float(self.radius))
         else:
-            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:4.2f}'.format(source[0], source[1], float(radius))
+            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:4.2f}'.format(source[0], source[1], float(self.radius))
         return url
 
     def _download_from_vizier(self, url, filename):
@@ -193,7 +217,7 @@ class VizierCatalog(object):
             except ValueError:
                 raise
             except IOError:
-                logging.critical('Invalid filename passed to read_vo_table')
+                logger.critical('Invalid filename passed to read_vo_table')
                 raise
         return tab.to_pandas()
 
@@ -208,44 +232,13 @@ class VizierCatalog(object):
         df.drop('sed_freq', axis=1, inplace=True)
         return df
 
-
-def parse_args():
-    '''
-    Read command line arguments
-    '''
-    # Define a parser
-    parser = argparse.ArgumentParser(description='Modules to query the Vizier Photometric Catalog')
-
-    # Add arguments
-    parser.add_argument('-d', '--debug', action='store_true', help='Turn on debugging messages')
-
-    # Use parser to interpret the command line arguments
-    inputs = vars(parser.parse_args())
-
-    # Set debugging options
-    if inputs['debug'] == False:
-        logging.disable(logging.INFO)  # Turns off debug messages
-    else:
-        logging.disable(logging.NOTSET)
-        logging.debug('Start of program')
-
 ############
 # Run Code #
 ############
 if __name__ == '__main__':
-    # Process command line arguments
-    # parse_args()
-
-    # A couple sources, including one that doesn't have any counterparts
-    # ra_list = [187.27832916, 150.231314, 149.426254, '15 34 57.224']
-    # dec_list = [2.05199, -4.1234, 2.073906, '+23 30 11.610']
-    # ra_list = ['14:23:45.45'] #
-    # dec_list = ['02:10:45.45'] #
-    # name_list = ['vega', 'ic348', 'not_a_source']
-
-    source_list = [("187.27832916", "2.05199"), (1, 2, 3), ('18h 36m 56.3364s','+38:47:1.291'), 'Vega', 'not_a_source', "NGC 7200"]
+    source_list = [("187.27832916", "2.05199"), (1, 2, 3), ('18h 36m 56.3364s', '+38:47:1.291'), 'Vega', 'not_a_source', "NGC 7200"]
 
     vizier = VizierCatalog()
     # pos_phot, pos_sources = vizier.query_vizier(zip(ra_list, dec_list))
     named_phot, name_id = vizier.query_vizier(source_list)
-    print(named_phot, name_id)
+    print named_phot, name_id
