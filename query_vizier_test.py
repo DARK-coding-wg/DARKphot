@@ -89,18 +89,10 @@ class TestQuery(unittest.TestCase):
         """ Check _create_url with tuple of 0 ints"""
         url = self.vizier._create_url((0, 0))
         self.assertTrue(url == "http://vizier.u-strasbg.fr/viz-bin/sed?-c=0.000000+0.000000&-c.rs=1.50")
-    def test_create_url_one_element_list(self):
-        """ Check _create_url with tuple of floats"""
-        self.assertRaises(IOError, self.vizier._create_url, (279.234733))
     def test_create_url_negative_dec(self):
         """ Check that negative declination is handled correctly """
         url = self.vizier._create_url((1.0, -38.783), radius=10.)
         self.assertTrue(url == "http://vizier.u-strasbg.fr/viz-bin/sed?-c=1.000000-38.783000&-c.rs=10.00")
-    def test_create_url_negative_ra(self):
-        """ Check that negative right ascension is handled correctly """
-        url = self.vizier._create_url(((-12.0, 0, 0), -38.783), radius=10.)
-        self.assertTrue(url == "http://vizier.u-strasbg.fr/viz-bin/sed?-c=180.000000-38.783000&-c.rs=10.00")
-
 
     ### Test for _check_coords ###
     def test_check_coords_formats(self):
@@ -203,15 +195,15 @@ class TestQuery(unittest.TestCase):
 
     ### Test get_all_dataframes ###
     def test_source_id_not_provided(self):
-        source_list = [(187.27832916, 2.05199), 'not_a_source', ('18h 36m 56.3364s', '+38:47:1.291'), 'Vega']
-        phot = self.vizier.get_all_dataframes(source_list, source_id=None, radius=1.5)
-        self.assertTrue(all(phot['source_id'].unique() == [0, 2, 3]))
+        source_list = [(187.27832916, 2.05199), 'not_a_source', 'Vega']
+        phot = self.vizier._get_all_dataframes(source_list, source_id=range(len(source_list)), radius=1.5)
+        self.assertTrue(all(phot['source_id'].unique() == [0, 2]))
 
     def test_source_id_provided(self):
-        source_list = [(187.27832916, 2.05199), 'not_a_source', ('18h 36m 56.3364s', '+38:47:1.291'), 'Vega']
-        source_id = [100, -6, '23', 4.5]
-        phot = self.vizier.get_all_dataframes(source_list, source_id=source_id, radius=1.5)
-        for ii, src_id in enumerate([100, '23', 4.5]):
+        source_list = [(187.27832916, 2.05199), 'not_a_source', 'Vega']
+        source_id = [-6, '23', 4.5]
+        phot = self.vizier._get_all_dataframes(source_list, source_id=source_id, radius=1.5)
+        for ii, src_id in enumerate([-6, 4.5]):
             self.assertAlmostEqual(src_id, phot['source_id'].unique()[ii])
 
     ### Test query_vizier ###

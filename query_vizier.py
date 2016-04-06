@@ -7,13 +7,6 @@
 # Usage: ./query_vizier
 #
 # Description: Code to query the photometric table of Vizier
-#
-# To Do:
-#    Tests
-#    Additional functionality for different formats of RA/Dec
-#    Querying by name
-#
-
 # Import Libraries
 import numpy as np
 import pandas as pd
@@ -32,6 +25,8 @@ logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s- %
 ###########
 # Classes #
 ###########
+
+
 class VizierCatalog(object):
     """ Class for creating a photometric catalog from Vizier """
 
@@ -62,25 +57,72 @@ class VizierCatalog(object):
                     clean_source_list.append(formatted_pos)
                     clean_source_id.append(ii)
         # Go through Vizier queries
-        vizier_data = self.get_all_dataframes(clean_source_list, source_id=clean_source_id, radius=radius)
+        vizier_data = self._get_all_dataframes(clean_source_list, clean_source_id, radius=radius)
         return vizier_data, source_info
 
-    def get_all_dataframes(self, source_list, source_id=None, radius=1.5):
+    def _check_coords(self, position):
+        """
+        Check that a source position is in the correct format.
+        If not, change to default coords.
+        Args:
+            position - source position. Must be 2-element list-like object with
+                       position[0] = RA, position[1] = dec.
+                       Acceptable formats for RA & dec are decimal degrees as
+                       single floats or ints, or sexagisimal as 3-element
+                       list-like object of (h,m,s), or strings with h:m:s.
+        Returns:
+            source_pos - Tuple of (RA,dec) in degrees.
+        """
+        if len(position) != 2:
+            raise IOError('Position {:} has the wrong number of elements'.format(position))
+        else:
+            # in_degrees = isinstance(position[0], (float, int)) & isinstance(position[1], (float, int)) # Check if input is float or int.
+            if not self._in_degrees(position):
+                if isinstance(position[0], (np.ndarray, list)):
+                    position = (tuple(position[0]), tuple(position[1]))  # SkyCoord interprets lists as multiple sources, not hour/min/sec
+                try:
+                    coords = SkyCoord(position[0], position[1], unit=(u.hourangle, u.deg))
+                    new_pos = (coords.ra.deg, coords.dec.deg)
+                except ValueError as exc:
+                    logging.critical(exc)
+                    raise
+                except:
+                    logging.critical('WARNING: RA and dec format cannot be read')
+                    raise
+            else:
+                new_pos = (float(position[0]), float(position[1]))
+            if not (0 <= new_pos[0] <= 360):
+                raise ValueError('RA = {:.2f}, but should be in the range [0,360]'.format(new_pos[0]))
+            if not (-90 <= new_pos[1] <= 90):
+                raise ValueError('dec should be in the range [-90,90]')
+        return new_pos
+
+    def _in_degrees(self, position):
+        """
+        Small helper function to check if input position in each element is a number
+        """
+        try:
+            position = (float(position[0]), float(position[1]))
+        except:
+            return False
+        else:
+            return True
+
+    def _get_all_dataframes(self, source_list, source_id, radius=1.5):
         """ Create a catalog containing all the photometric data from Vizier for a list of sources
 
         Returns full output from Vizier, with a single added column of source_id.
         Args:
             source_list - list of souces. Can be a list of (ra, dec) tuples or a list of names as strings. RA & Dec must be in decimal degrees.
+            source_id - list of source_ids to use. If not provided, will use the index of the source_list
         Keywords:
             radius - Defines region to search for counterparts in arcsec. Default is 1.5"
-            source_id - list of source_ids to use. If not provided, will use the index of the source_list
         Returns:
             all_frames - a pandas dataframe that contains all observations from Vizier and an additional source_id column for identifying sources
         """
-        if source_id is None:
-            source_id = np.arange(len(source_list))
+
         list_of_frames = []
-        vot_name = 'temp.vot'
+        vot_name = 'temp_10823756018743650238475093864982764032817049327618.vot'
         for ii, source in enumerate(source_list):
             url = self._create_url(source, radius=radius)
             self._download_from_vizier(url, vot_name)
@@ -96,6 +138,41 @@ class VizierCatalog(object):
                 os.remove(vot_name)
         all_frames = self._replace_frequency_with_wavelength(pd.concat(list_of_frames))
         return all_frames
+
+    def _create_url(self, source, radius=1.5):
+        """ Make the correct URL for the Vizier query
+
+        Uses the format found at http://vizier.u-strasbg.fr/vizier/sed/doc/
+        Args:
+            source - Either a tuple of (ra, dec) in decimal degrees or a string that represents the name of the source
+        Keywords:
+            radius - Search radius in arcsec. Default is 1.5 arcsec.
+        Returns:
+            url - URL where VOTable from Vizier Photometric Table can be found
+        """
+        if isinstance(source, str):
+            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:}&-c.rs={:4.2f}'.format(source, float(radius))
+        else:
+            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:4.2f}'.format(source[0], source[1], float(radius))
+        return url
+
+    def _download_from_vizier(self, url, filename):
+        """ Download the VOTable from Vizier Photometric Table and save to designated filename.
+
+        Args:
+            url - Full url to Vizier Photometric Table query
+            filename - local filename to save the VOTable
+        Returns:
+            None
+        Side Effects:
+            Downloads and saves the VOTable found at url to filename.
+        """
+        response = requests.get(url, stream=True)
+        response.raise_for_status()       # Make sure url loaded properly
+        with open(filename, 'wb') as vo_table:
+            for ii, chunk in enumerate(response.iter_content(chunk_size=1024)):
+                if chunk:  # filter out keep-alive new chunks
+                    vo_table.write(chunk)
 
     def _read_vo_table(self, filename):
         """
@@ -120,46 +197,6 @@ class VizierCatalog(object):
                 raise
         return tab.to_pandas()
 
-    def _download_from_vizier(self, url, filename):
-        """ Download the VOTable from Vizier Photometric Table and save to designated filename.
-
-        Args:
-            url - Full url to Vizier Photometric Table query
-            filename - local filename to save the VOTable
-        Returns:
-            None
-        Side Effects:
-            Downloads and saves the VOTable found at url to filename.
-        """
-        response = requests.get(url, stream=True)
-        response.raise_for_status()       # Make sure url loaded properly
-        with open(filename, 'wb') as vo_table:
-            for ii, chunk in enumerate(response.iter_content(chunk_size=1024)):
-                if chunk:  # filter out keep-alive new chunks
-                    vo_table.write(chunk)
-
-    def _create_url(self, source, radius=1.5):
-        """ Make the correct URL for the Vizier query
-
-        Uses the format found at http://vizier.u-strasbg.fr/vizier/sed/doc/
-        Args:
-            source - Either a tuple of (ra, dec) in decimal degrees or a string that represents the name of the source
-        Keywords:
-            radius - Search radius in arcsec. Default is 1.5 arcsec.
-        Returns:
-            url - URL where VOTable from Vizier Photometric Table can be found
-        """
-        if isinstance(source, str):
-            url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:}&-c.rs={:4.2f}'.format(source, float(radius))
-        else:
-            try:
-                coords = self._check_coords(source)
-            except:
-                raise IOError('Provided Source is not of correct type. Must be either a tuple of (ra, dec) or a string of name')
-            else:
-                url = 'http://vizier.u-strasbg.fr/viz-bin/sed?-c={:f}{:+f}&-c.rs={:4.2f}'.format(coords[0], coords[1], float(radius))
-        return url
-
     def _replace_frequency_with_wavelength(self, catalog):
         """ Converts the column sed_freq to sed_wave with the appropriate units.
 
@@ -171,42 +208,6 @@ class VizierCatalog(object):
         df.drop('sed_freq', axis=1, inplace=True)
         return df
 
-    def _check_coords(self, position):
-        """
-        Check that a source position is in the correct format.
-        If not, change to default coords.
-        Args:
-            position - source position. Must be 2-element list-like object with
-                       position[0] = RA, position[1] = dec.
-                       Acceptable formats for RA & dec are decimal degrees as
-                       single floats or ints, or sexagisimal as 3-element
-                       list-like object of (h,m,s), or strings with h/m/s.
-        Returns:
-            source_pos - Tuple of (RA,dec) in degrees.
-        """
-        if len(position) != 2:
-            raise IOError('Position {:} has the wrong number of elements'.format(position))
-        else:
-            in_degrees = isinstance(position[0], (float, int)) & isinstance(position[1], (float, int))
-            if isinstance(position[0], (np.ndarray, list)):
-                position = (tuple(position[0]), tuple(position[1]))  # SkyCoord interprets lists as multiple sources, not hour/min/sec
-            if not in_degrees:
-                try:
-                    coords = SkyCoord(position[0], position[1], unit=(u.hourangle, u.deg))
-                    new_pos = (coords.ra.deg, coords.dec.deg)
-                except ValueError as exc:
-                    logging.critical(exc)
-                    raise
-                except:
-                    logging.critical('WARNING: RA and dec format cannot be read')
-                    raise
-            else:
-                new_pos = (float(position[0]), float(position[1]))
-            if not (0 <= new_pos[0] <= 360):
-                raise ValueError('RA = {:.2f}, but should be in the range [0,360]'.format(new_pos[0]))
-            if not (-90 <= new_pos[1] <= 90):
-                raise ValueError('dec should be in the range [-90,90]')
-        return new_pos
 
 def parse_args():
     '''
@@ -242,8 +243,9 @@ if __name__ == '__main__':
     # dec_list = ['02:10:45.45'] #
     # name_list = ['vega', 'ic348', 'not_a_source']
 
-    source_list = [(187.27832916,2.05199), (1,2,3), ('18h 36m 56.3364s','+38:47:1.291'), 'Vega', 'not_a_source']
+    source_list = [("187.27832916", "2.05199"), (1, 2, 3), ('18h 36m 56.3364s','+38:47:1.291'), 'Vega', 'not_a_source', "NGC 7200"]
 
     vizier = VizierCatalog()
     # pos_phot, pos_sources = vizier.query_vizier(zip(ra_list, dec_list))
-    named_phot, named_sources = vizier.query_vizier(source_list)
+    named_phot, name_id = vizier.query_vizier(source_list)
+    print(named_phot, name_id)
