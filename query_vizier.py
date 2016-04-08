@@ -46,7 +46,9 @@ class VizierCatalog(object):
     def __init__(self, table_name=None):
         """
         Keywords:
-            table_name - Set to the path of the temporary file that will be used to download data to. This file will be removed after each source query.
+            table_name - Set to the path of the temporary file that will be
+            used to download data to. This file will be removed after each
+            source query.
         """
         if table_name is None:
             self.vot_name = 'temp_1082375601874365082764032817049327618.vot'
@@ -57,12 +59,24 @@ class VizierCatalog(object):
         """ Creates photometric table and source information table
 
         Args:
-            source_list - list of souces. Each element in the list should be a string or an accepted position. Strings are passed to the Vizier database as is, so anything that Vizier accepts (names, positions, etc.) can be passed along as a string. Positions must be specified as 2-element list-like objects with position[0] = Right Ascension, position[1] = Declination. Acceptable formats for RA are (1) decimal degrees [float, int, or string], (2) or sexagisimal as 3-element list-like object of (hours/degrees, minutes, seconds) or strings formatted such as 'XX:XX:XX or 'XXhXXmXXs' or 'XX XX XX'. See astropy.SkyCoords for full list of accepted formats.
+            source_list - list of souces. Each element in the list should be a
+            string or an accepted position. Strings are passed to the Vizier
+            database as is, so anything that Vizier accepts (names, positions,
+            etc.) can be passed along as a string. Positions must be specified
+            as 2-element list-like objects with position[0] = Right Ascension,
+            position[1] = Declination. Acceptable formats for RA are (1)
+            decimal degrees [float, int, or string], (2) or sexagisimal as
+            3-element list-like object of (hours/degrees, minutes, seconds) or
+            strings formatted such as 'XX:XX:XX or 'XXhXXmXXs' or 'XX XX XX'.
+            See astropy. SkyCoords for full list of accepted formats.
         Keywords:
-            radius - Defines region to search for counterparts in arcsec. Default is 1.5"
+            radius - Defines region to search for counterparts in arcsec.
+            Default is 1.5"
         Returns:
-            vizier_data - pandas dataframe containing all observations from Vizier and an additional source_id column that identifies which source each observation is for
-            source_info - pandas dataframe containing the input sources and their corresponding source_id.
+            vizier_data - pandas dataframe containing all observations from
+            Vizier and an additional source_id column that identifies which
+            source each observation is for source_info - pandas dataframe
+            containing the input sources and their corresponding source_id.
         """
         source_info = pd.DataFrame({'source_id': range(len(source_list)), 'source': source_list})
         clean_source_id = []
@@ -103,10 +117,10 @@ class VizierCatalog(object):
         if len(position) != 2:
             raise IOError('Position {:} has the wrong number of elements'.format(position))
         else:
-            # in_degrees = isinstance(position[0], (float, int)) & isinstance(position[1], (float, int)) # Check if input is float or int.
             if not self._in_degrees(position):
                 if isinstance(position[0], (np.ndarray, list)):
-                    position = (tuple(position[0]), tuple(position[1]))  # SkyCoord interprets lists as multiple sources, not hour/min/sec
+                    # SkyCoord interprets lists as multiple sources, not hour/min/sec
+                    position = (tuple(position[0]), tuple(position[1]))
                 try:
                     coords = SkyCoord(position[0], position[1], unit=(u.hourangle, u.deg))
                     new_pos = (coords.ra.deg, coords.dec.deg)
@@ -136,16 +150,21 @@ class VizierCatalog(object):
             return True
 
     def _get_all_dataframes(self, source_list, source_id):
-        """ Create a catalog containing all the photometric data from Vizier for a list of sources
+        """
+        Create catalog containing all photometric data from Vizier for list of sources
 
         Returns full output from Vizier, with a single added column of source_id.
         Args:
-            source_list - list of souces. Can be a list of (ra, dec) tuples or a list of names as strings. RA & Dec must be in decimal degrees.
-            source_id - list of source_ids to use. If not provided, will use the index of the source_list
+            source_list - list of souces. Can be a list of (ra, dec) tuples or
+            a list of names as strings. RA & Dec must be in decimal degrees.
+            source_id - list of source_ids to use. If not provided, will use
+            the index of the source_list
         Keywords:
-            radius - Defines region to search for counterparts in arcsec. Default is 1.5"
+            radius - Defines region to search for counterparts in arcsec.
+            Default is 1.5"
         Returns:
-            all_frames - a pandas dataframe that contains all observations from Vizier and an additional source_id column for identifying sources
+            all_frames - a pandas dataframe that contains all observations from
+            Vizier and an additional source_id column for identifying sources.
         """
 
         list_of_frames = []
@@ -170,7 +189,8 @@ class VizierCatalog(object):
 
         Uses the format found at http://vizier.u-strasbg.fr/vizier/sed/doc/
         Args:
-            source - Either a tuple of (ra, dec) in decimal degrees or a string that represents the name of the source
+            source - Either a tuple of (ra, dec) in decimal degrees or a string
+            that represents the name of the source
         Returns:
             url - URL where VOTable from Vizier Photometric Table can be found
         """
@@ -181,7 +201,8 @@ class VizierCatalog(object):
         return url
 
     def _download_from_vizier(self, url, filename):
-        """ Download the VOTable from Vizier Photometric Table and save to designated filename.
+        """
+        Download VOTable from Vizier Photometric Table and save to designated filename.
 
         Args:
             url - Full url to Vizier Photometric Table query
@@ -203,12 +224,13 @@ class VizierCatalog(object):
         Reads VOTable and returns a pandas dataframe (private).
 
         Args:
-            filename - Full path filename of the VOTable. Should have a file extension of .vot
+            filename - Full path filename of the VOTable. Should have a file 
+            extension of .vot
         Returns:
-            pandas_table - A pandas dataframe containing the data from a VOTable
+            pandas_table - Pandas dataframe containing the data from a VOTable
         Raises:
             ValueError: The VOTable exists but is empty.
-            IOError: Improper filename provided. Most likely the file does not exist.
+            IOError: Improper filename provided. Likely the file does not exist
         """
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -222,9 +244,12 @@ class VizierCatalog(object):
         return tab.to_pandas()
 
     def _replace_frequency_with_wavelength(self, catalog):
-        """ Converts the column sed_freq to sed_wave with the appropriate units.
+        """
+        Converts the column sed_freq to sed_wave with the appropriate units.
 
-        Treats any negative frequencies as non-detections and replaces them with NaNs """
+        Treats any negative frequencies as non-detections and replaces them
+        with NaNs
+        """
         df = catalog.copy()
         speed_of_light = 299792.458  # [um * GHz]
         df['sed_wave'] = speed_of_light / df['sed_freq']  # Converts from GHz to microns

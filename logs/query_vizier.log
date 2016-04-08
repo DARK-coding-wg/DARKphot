@@ -1,2 +1,0 @@
-2016-04-06 15:57:51,570 - CRITICAL - query_vizier - Source (1, 2, 3) with id 1 was not a valid name or position
-2016-04-06 15:57:52,371 - WARNING - _get_all_dataframes - No observations found via Vizier for source_id = 4
