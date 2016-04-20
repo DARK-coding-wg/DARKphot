@@ -154,16 +154,18 @@ class LocalCatalog(object):
         """
         Read list of object names or coordinates to select from input catalog.
         Everything not recognized as a valid coordinate set by SkyCoords()
-        is considered a name.
+        is considered a name. That is
+        Object names are stored in a list object_sel_names, while coordinates
+        are stored in a list object_sel_coordinates.
         
         Returns:
-            Two catalogs [more to come]
+            Flag showing whether or not input list is empty
         """
         # TODO: Needs checking of potential problems with the input file
         with open(self.fname_object_sel_names, 'r') as f:
             self.object_sel_names = []
             self.object_sel_coordinates = []
-            name_sel = False
+            list_is_not_empty = False
             for line in f:
                 if line[0] == '#':
                     continue
@@ -176,9 +178,9 @@ class LocalCatalog(object):
                     except:
                         self.object_sel_names.append(inter)
 
-                name_sel = True # Only if there is a line, in the file specifying an object the selection will be activated
+                list_is_not_empty = True # Only if there is a line, in the file specifying an object the selection will be activated
 
-        return name_sel
+        return list_is_not_empty
 
     def _read_text_catalog(self, file_format):
         """ Read in the catalog (private) """
