@@ -23,7 +23,7 @@ class LocalCatalog(object):
         Args:
             fname_input_catalog (str): Filename of the input catalog
             fname_parameter_file (str): Filename of the parameter file,
-                specifying the passband which need to be imported
+                specifying the passband central wavelength in Angstrom which need to be imported
             fname_object_sel_names (str): Filename including object names which shall
                 be taken from the catalog
             name_ra_col (str; default: RA): Name of the RA column
@@ -152,9 +152,12 @@ class LocalCatalog(object):
 
     def _read_sel_object_names(self): # will be renamed to _read_sel_objects
         """
-        Reading in the list of object names which shall be put into the catalog
+        Read list of object names or coordinates to select from input catalog.
+        Everything not recognized as a valid coordinate set by SkyCoords()
+        is considered a name.
+        
         Returns:
-
+            Two catalogs [more to come]
         """
         # TODO: Needs checking of potential problems with the input file
         with open(self.fname_object_sel_names, 'r') as f:
@@ -167,21 +170,13 @@ class LocalCatalog(object):
                 else:
                     inter = line.strip(' \n\t\n')
                     inter = inter.split()
-                    if len(inter) == 2:
+                    try:
                         inter = check_coords(inter)
                         self.object_sel_coordinates.append(inter)
-
-                    elif len(inter) == 1:
+                    except:
                         self.object_sel_names.append(inter)
-                    else:
-                        raise IOError('{:s}: Rows must have one '
-                                      '(object names) or two (RA Dec)'
-                                      ' columns'.format(self.fname_object_sel_names))
 
                 name_sel = True # Only if there is a line, in the file specifying an object the selection will be activated
-
-
-
 
         return name_sel
 
