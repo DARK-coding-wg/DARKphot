@@ -8,7 +8,7 @@ import numpy as np
 
 class LocalCatalog(object):
     """
-    Class for creating a local catalog in DARKphot
+    Class for creating a local catalog in DARKphot. Super cool!
     """
 
     def add_local_catalog(self, fname_input_catalog, fname_parameter_file,
