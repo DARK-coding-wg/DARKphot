@@ -45,7 +45,7 @@ def check_coords(position):
 
 def in_degrees(position):
     """
-    Small helper function to check if input position in each element is a number
+    Small helper function to check if input position in each element is a number. Super Cool!
     """
     try:
         position = (float(position[0]), float(position[1]))
