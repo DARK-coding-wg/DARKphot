@@ -146,8 +146,8 @@ class LocalCatalog(object):
                 for ii in value_error_msg:
                     print(ii)
                 print("Execution stopped due to input error in input parameter file.")
-                #raise
-                exit()
+                raise
+                # exit()
         return col_flux_names, col_fluxerror_names, central_wavelengths
 
     def _read_sel_object_names(self): # will be renamed to _read_sel_objects
@@ -218,10 +218,6 @@ def get_match_mask_names(sel_list, master_array):
         master_mask = master_mask | (master_array == element)
 
     return master_mask
-
-
-
-
 
 #####################
 ###### Run Code #####
